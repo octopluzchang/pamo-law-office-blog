@@ -1,11 +1,220 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const allArticles = (await getCollection('articles'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
+  .slice(0, 3);
+
+const caseStats = [
+  { label: '車禍成功求償', number: '170', unit: '萬', url: '/cases/' },
+  { label: '車禍少賠', number: '56', unit: '萬', url: '/cases/' },
+  { label: '成功取得資遣費', number: '18', unit: '萬', url: '/cases/' }
+];
+
+const services = [
+  { title: '車禍和解', img: '/assets/service_1.png' },
+  { title: '車禍鑑定/賠償分析', img: '/assets/service_2.png' },
+  { title: '土地/房屋共有分割', img: '/assets/service_3.png' },
+  { title: '遺產繼承/遺囑問題', img: '/assets/service_4.png' }
+];
+
+const team = [
+  { name: '洪建全', title: '毒品／詐欺', exp: '洗錢／一般民刑事訴訟', img: '/assets/team_4.png' },
+  { name: '施尚宏', title: '交通鑒定', exp: '車禍民刑事訴訟', img: '/assets/team_1.png' },
+  { name: '何盈得', title: '契約／不動產', exp: '醫療糾紛／家事', img: '/assets/team_3.png' },
+  { name: '吳瑩庭', title: '損害賠償／租屋蟑螂', exp: '性騷擾侵害案件', img: '/assets/team_2.png' }
+];
+
+const products = [
+  { title: '合約即時印', img: '/assets/products_1.png', url: 'https://fastprint.pamolaw.com/' },
+  { title: 'PAMO車禍線上律師', img: '/assets/products_2.png', url: 'https://www.pamolaw.com/' },
+  { title: '旅行法保', img: '/assets/products_3.png', url: 'https://www.pamolaw.com/travelpro/' },
+  { title: '車險健檢', img: '/assets/products_4.png', url: 'https://www.pamolaw.com/quiz-take/' }
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout>
+  <main class="bg-white text-black">
+    <section class="relative overflow-hidden bg-black text-white">
+      <div class="pointer-events-none absolute inset-0">
+        <img src="/assets/hero_bg.svg" alt="" class="w-full h-full object-cover" />
+      </div>
+
+      <div class="relative mx-auto max-w-6xl px-6">
+        <div class="flex min-h-105 flex-col items-center justify-center py-16 my-16 text-center md:min-h-130 md:py-24">
+          <h1 class="max-w-3xl text-4xl leading-tight md:text-6xl">
+            車禍、不動產、遺產糾紛
+            <div class="my-2"></div>
+            一步錯，步步錯
+          </h1>
+
+          <p class="mt-6 max-w-xl text-base leading-8 text-white/85 md:text-xl">
+            律師直接幫你判斷
+            <br />
+            該不該提告、怎麼拿最多賠償
+          </p>
+          <a
+            href="https://lin.ee/wVaKLny"
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick="window.gtag && window.gtag('event', 'cta_click', {
+              cta_name: 'hero_line_consult',
+              location: 'home_hero',
+              destination: 'line'
+            })"
+            class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
+          >
+            預約免費諮詢
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
+      <h2 class="text-center text-3xl md:text-5xl">服務項目</h2>
+
+      <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-y-10 md:grid-cols-4">
+        {services.map((service) => (
+          <div class="group flex flex-col items-center text-center">
+            <div class="flex h-full w-full items-center justify-center">
+              <img src={service.img} alt={service.title} class="md:h-[180px] md:w-[180px] w-[120px] h-30 object-contain" />
+            </div>
+
+            <div class="mt-4 font-black leading-6 md:text-base">
+              {service.title}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="articles" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
+      <h2 class="text-center text-3xl md:text-5xl">熱門法律問題</h2>
+
+      <form method="get" action="/articles/" class="mx-auto mt-10 flex max-w-xl overflow-hidden border border-[#d6aa8c] bg-white">
+        <input
+          type="search"
+          name="q"
+          placeholder="輸入關鍵字"
+          class="w-full bg-transparent px-6 py-3 text-sm outline-none placeholder:text-neutral-400"
+        />
+        <button class="bg-[#c69c7b] px-6 py-3 text-sm font-bold text-black transition hover:opacity-90 whitespace-nowrap">
+          搜尋
+        </button>
+      </form>
+
+      <div class="mx-auto mt-12 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+        {allArticles.map((article) => (
+          <ArticleCard
+            title={article.data.title}
+            href={`/articles/${article.id}/`}
+            image={article.data.cover}
+            categoryLabel={article.data.categoryLabel}
+            categorySlug={article.data.category}
+          />
+        ))}
+      </div>
+
+      <div class="mt-10 text-center">
+        <a href="/articles/" class="inline-block text-[#c69c7b] font-black hover:opacity-80">
+          看更多法律文章 →
+        </a>
+      </div>
+    </section>
+
+    <section id="cases" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
+      <h2 class="text-center text-3xl md:text-5xl">成功案例</h2>
+
+      <div class="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-3">
+        {caseStats.map((item) => (
+          <div class="text-center">
+            <h3 class="text-2xl font-black md:text-3xl">{item.label}</h3>
+            <div class="mt-5 font-black text-7xl leading-none md:text-[88px]">
+              {item.number}
+              <span class="ml-1 text-4xl md:text-5xl">{item.unit}</span>
+            </div>
+            <a href={item.url} class="mt-4 font-sans font-black inline-block text-xl text-[#c69c7b] hover:opacity-80">
+              前往案例
+            </a>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-black text-white">
+      <div class="mx-auto max-w-4xl px-6 py-20 text-center md:py-24">
+        <h2 class="text-3xl font-bold leading-tight md:text-5xl">
+          別等到事情惡化後，才後悔沒找律師
+        </h2>
+
+        <p class="mt-6 text-base leading-8 text-white/85 md:text-xl">
+          多數人都是在事情惡化後才找律師
+          <br />
+          但那時候
+          <br />
+          很多選擇已經來不及了
+        </p>
+
+        <a
+            href="https://lin.ee/wVaKLny"
+            target="_blank"
+            rel="noopener noreferrer"
+            onclick="window.gtag && window.gtag('event', 'cta_click', {
+              cta_name: 'bottom_line_consult',
+              location: 'home_hero',
+              destination: 'line'
+            })"
+            class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
+          >
+            預約免費諮詢
+          </a>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-20 md:py-24">
+      <h2 class="text-center text-3xl md:text-5xl">團隊介紹</h2>
+
+      <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 md:grid-cols-4">
+        {team.map((member) => (
+          <div class="group text-center">
+            <div class="aspect-3/4 overflow-hidden bg-[#d8d8d8]">
+              <img src={member.img} alt={member.name} class="h-full w-full object-cover" />
+            </div>
+
+            <h3 class="py-4 font-black text-2xl md:text-3xl">
+              {member.name}
+              <div class="text-sm font-sans font-bold">律師</div>
+            </h3>
+
+            <hr class="border-black/20" />
+
+            <div class="mt-2 text-sm font-semibold leading-6 md:text-base">{member.title}</div>
+            <div class="mt-1 text-sm leading-6 md:text-base text-neutral-600">{member.exp}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-20 md:py-24">
+      <h2 class="text-center text-3xl md:text-5xl">略策旗下產品</h2>
+
+      <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-8 md:grid-cols-4">
+        {products.map((product) => (
+          <a
+            href={product.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group text-center"
+          >
+            <div class="aspect-square flex items-center justify-center overflow-hidden">
+              <img src={product.img} alt={product.title} class="h-full w-full object-contain transition opacity-70 duration-300 group-hover:scale-105 group-hover:opacity-100" />
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

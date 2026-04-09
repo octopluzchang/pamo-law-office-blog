@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+
+@layer base {
+  html {
+    font-family: "Noto Sans TC", sans-serif;
+  }
+
+  body {
+    font-weight: 500;
+    color: #333;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: "Noto Serif TC", sans-serif;
+    font-weight: 900;
+    line-height: 1.4;
+  }
+
+  a {
+    color: #c69c7b;
+    text-decoration: none;
+  }
+
+  a:visited {
+    color: #c69c7b;
+  }
+
+  a:hover,
+  a:active {
+    color: #c69c7b;
+  }
+
+  input {
+    border: none;
+  }
+
+  button {
+    border: none;
+    border-radius: 0;
+  }
+}
+
+@layer components {
+  .article-card {
+    @apply overflow-hidden border border-[#d9b39a] bg-white shadow-[0_4px_10px_rgba(0,0,0,0.08)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(0,0,0,0.12)];
+  }
+
+  .article-card-title {
+    @apply font-sans font-black text-black text-center leading-7;
+  }
+
+  .filter-pill {
+    @apply inline-flex items-center rounded-full border border-[#c69c7b] px-5 py-2 text-sm text-[#c69c7b] transition hover:opacity-90 whitespace-nowrap;
+  }
+
+  .filter-pill:hover {
+    @apply bg-[#a87d5c] text-white no-underline;
+  }
+
+  .filter-pill.current {
+    @apply bg-[#c69c7b] text-white;
+  }
+
+  .share-icon {
+    @apply appearance-none bg-transparent p-0 m-0 flex h-10 w-10 items-center justify-center rounded-full border border-[#c69c7b] text-[#c69c7b] transition hover:bg-[#c69c7b] hover:text-white;
+    overflow: hidden;
+  }
+
+  .share-icon:hover {
+    text-decoration: none;
+  }
+
+  .prose-pamo {
+    @apply max-w-none text-[16px] leading-8 text-[#333];
+  }
+
+  .prose-pamo h2 {
+    @apply mt-10 mb-4 text-2xl font-black;
+  }
+
+  .prose-pamo h3 {
+    @apply mt-8 mb-3 text-xl font-black;
+  }
+
+  .prose-pamo p {
+    @apply mb-5;
+  }
+
+  .prose-pamo ul {
+    @apply mb-5 list-disc pl-6;
+  }
+
+  .prose-pamo ol {
+    @apply mb-5 list-decimal pl-6;
+  }
+}

@@ -1,0 +1,82 @@
+---
+const pathname = Astro.url.pathname;
+
+const isArticles = pathname.startsWith('/articles');
+const isCases = pathname.startsWith('/cases');
+const isHome = pathname === '/';
+---
+
+<header
+  id="masthead"
+  class="site-header fixed top-0 left-0 right-0 z-50 w-full py-4 backdrop-blur-lg backdrop-saturate-150 border-b border-white/10"
+>
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-6 px-6">
+
+    <!-- Left nav -->
+    <div class="flex flex-1 items-center justify-end">
+      <nav class="flex items-center gap-8 justify-end">
+        <a
+          href="/#services"
+          class:list={[
+            "hidden md:inline text-sm transition hover:opacity-90 font-sans font-black text-[#c69c7b]",
+            isHome && "opacity-100"
+          ]}
+        >
+          服務項目
+        </a>
+
+        <a
+          href="/articles/"
+          class:list={[
+            "text-sm transition hover:opacity-90 font-sans font-black text-[#c69c7b]",
+            isArticles && "text-[#a87249]"
+          ]}
+        >
+          法律問題
+        </a>
+      </nav>
+    </div>
+
+    <!-- Logo -->
+    <div class="shrink-0">
+      <a href="/" class="flex items-center hover:opacity-90">
+        <img
+          src="/assets/header_logo.svg"
+          alt="略策法律事務所"
+          class="h-10 md:h-15"
+        />
+      </a>
+    </div>
+
+    <!-- Right nav -->
+    <div class="flex flex-1 items-center">
+      <nav class="flex items-center gap-8">
+        <a
+          href="/cases/"
+          class:list={[
+            "text-sm transition hover:opacity-90 font-sans font-black text-[#c69c7b]",
+            isCases && "text-[#a87249]"
+          ]}
+        >
+          成功案例
+        </a>
+
+        <a
+          href="https://lin.ee/wVaKLny"
+          target="_blank"
+          rel="noopener noreferrer"
+          onclick="window.gtag && window.gtag('event', 'cta_click', {
+            cta_name: 'header_line_consult',
+            location: 'header',
+            destination: 'line'
+          })"
+          class="font-sans font-black hidden md:inline-flex items-center rounded-full border border-[#c69c7b] px-5 py-2 text-sm text-[#c69c7b] transition hover:opacity-90 whitespace-nowrap"
+        >
+          免費諮詢
+        </a>
+        
+      </nav>
+    </div>
+
+  </div>
+</header>

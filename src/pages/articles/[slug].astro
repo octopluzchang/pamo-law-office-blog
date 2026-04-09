@@ -1,0 +1,129 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles
+    .filter((item) => !item.data.draft)
+    .map((article) => ({
+      params: { slug: article.id },
+      props: { article }
+    }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+
+const postUrl = new URL(Astro.url.pathname, Astro.site).toString();
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`;
+const lineShareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(postUrl)}`;
+
+const moreArticles = (await getCollection('articles'))
+  .filter((item) => !item.data.draft && item.id !== article.id)
+  .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
+  .slice(0, 3);
+---
+
+<ArticleLayout
+  title={article.data.title}
+  description={article.data.description}
+  cover={article.data.cover}
+>
+  <div slot="share" class="mt-6 flex justify-center gap-3">
+    <a href={facebookShareUrl} target="_blank" rel="noopener noreferrer" aria-label="分享到 Facebook" class="share-icon">
+      <span class="text-xs font-black">f</span>
+    </a>
+    <a href={lineShareUrl} target="_blank" rel="noopener noreferrer" aria-label="分享到 LINE" class="share-icon">
+      <span class="text-[10px] font-black">LINE</span>
+    </a>
+    <button
+      type="button"
+      aria-label="更多分享方式"
+      class="share-icon js-share-more"
+      data-share-url={postUrl}
+      data-share-title={article.data.title}
+    >
+      <span class="text-xs font-black">⋯</span>
+    </button>
+  </div>
+
+  <div class="prose-pamo mt-8">
+    <Content />
+  </div>
+
+  <div slot="after-content">
+    <section class="relative z-30 mt-12 overflow-hidden border border-[#d9b39a] bg-white px-6 py-10 text-center md:px-10 md:py-12">
+      <h2 class="text-2xl font-black leading-tight md:text-4xl">
+        不確定你的情況怎麼處理？
+      </h2>
+
+      <p class="mx-auto mt-4 max-w-xl text-sm leading-7 text-neutral-600 md:text-base">
+        法律問題拖越久，成本通常越高。先讓律師幫你判斷方向，再決定下一步。
+      </p>
+      <a
+        href="https://lin.ee/wVaKLny"
+        target="_blank"
+        rel="noopener noreferrer"
+        onclick="window.gtag && window.gtag('event', 'cta_click', {
+          cta_name: 'article_bottom_line_consult',
+          location: 'article_bottom',
+          destination: 'line'
+        })"
+        class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
+      >
+        預約免費諮詢
+      </a>
+    </section>
+
+    <section class="relative z-30 mt-12">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-2xl font-black md:text-4xl">看更多法律文章</h2>
+        <a href="/articles/" class="text-sm font-black text-[#c69c7b] hover:opacity-80 md:text-base">
+          看全部 →
+        </a>
+      </div>
+
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        {moreArticles.map((item) => (
+          <ArticleCard
+            title={item.data.title}
+            href={`/articles/${item.id}/`}
+            image={item.data.cover}
+            categoryLabel={item.data.categoryLabel}
+            categorySlug={item.data.category}
+          />
+        ))}
+      </div>
+    </section>
+  </div>
+</ArticleLayout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.js-share-more');
+    buttons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const shareUrl = (button as HTMLElement).dataset.shareUrl;
+        const shareTitle = (button as HTMLElement).dataset.shareTitle;
+
+        if (!shareUrl) return;
+
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: shareTitle, url: shareUrl });
+          } catch {}
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          alert('連結已複製');
+        } catch {
+          window.prompt('請手動複製連結：', shareUrl);
+        }
+      });
+    });
+  });
+</script>

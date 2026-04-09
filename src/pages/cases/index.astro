@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const cases = (await getCollection('cases'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date));
+---
+
+<BaseLayout title="成功案例">
+  <main class="relative min-h-screen overflow-hidden">
+    <div class="pointer-events-none fixed w-full h-full top-0 right-0 inset-0 z-10">
+      <img src="/assets/article_bg.svg" alt="" class="w-full h-full object-cover" />
+    </div>
+
+    <section class="relative mx-auto max-w-6xl px-6 pb-24 mt-5 pt-10 md:pt-14 z-20">
+      <div class="mx-auto max-w-3xl text-center">
+        <h1 class="mt-10 text-4xl font-black tracking-tight md:text-6xl">
+          成功案例
+        </h1>
+      </div>
+
+      <div class="mx-auto mt-12 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+        {cases.length > 0 ? (
+          cases.map((item) => (
+            <ArticleCard
+              title={item.data.title}
+              href={`/cases/${item.id}/`}
+              image={item.data.cover}
+            />
+          ))
+        ) : (
+          <div class="col-span-full py-20 text-center text-base text-neutral-500 md:text-lg">
+            目前沒有案例。
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+</BaseLayout>

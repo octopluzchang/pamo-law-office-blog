@@ -1,0 +1,86 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+
+export async function getStaticPaths() {
+  const cases = await getCollection('cases');
+  return cases
+    .filter((item) => !item.data.draft)
+    .map((item) => ({
+      params: { slug: item.id },
+      props: { caseItem: item }
+    }));
+}
+
+const { caseItem } = Astro.props;
+const { Content } = await render(caseItem);
+
+const moreArticles = (await getCollection('articles'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
+  .slice(0, 3);
+---
+
+<ArticleLayout
+  title={caseItem.data.title}
+  description={caseItem.data.description}
+  cover={caseItem.data.cover}
+>
+  <div slot="share" class="mt-6 flex justify-center gap-3">
+    <span class="share-icon"><span class="text-xs font-black">f</span></span>
+    <span class="share-icon"><span class="text-[10px] font-black">LINE</span></span>
+    <span class="share-icon"><span class="text-xs font-black">⋯</span></span>
+  </div>
+
+  <div class="prose-pamo mt-8">
+    <Content />
+  </div>
+
+  <div slot="after-content">
+    <section class="relative z-30 mt-12 overflow-hidden border border-[#d9b39a] bg-white px-6 py-10 text-center md:px-10 md:py-12">
+      <h2 class="text-2xl font-black leading-tight md:text-4xl">
+        類似情況，不要自己硬扛
+      </h2>
+
+      <p class="mx-auto mt-4 max-w-xl text-sm leading-7 text-neutral-600 md:text-base">
+        先把案件方向判斷清楚，再決定下一步，通常可以少走很多冤枉路。
+      </p>
+
+      <a
+        href="https://lin.ee/wVaKLny"
+        target="_blank"
+        rel="noopener noreferrer"
+        onclick="window.gtag && window.gtag('event', 'cta_click', {
+          cta_name: 'case_bottom_line_consult',
+          location: 'case_bottom',
+          destination: 'line'
+        })"
+        class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
+      >
+        預約免費諮詢
+      </a>
+    </section>
+
+    <section class="relative z-30 mt-12">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-2xl font-black md:text-4xl">看更多法律文章</h2>
+        <a href="/articles/" class="text-sm font-black text-[#c69c7b] hover:opacity-80 md:text-base">
+          看全部 →
+        </a>
+      </div>
+
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        {moreArticles.map((item) => (
+          <ArticleCard
+            title={item.data.title}
+            href={`/articles/${item.id}/`}
+            image={item.data.cover}
+            categoryLabel={item.data.categoryLabel}
+            categorySlug={item.data.category}
+          />
+        ))}
+      </div>
+    </section>
+  </div>
+</ArticleLayout>

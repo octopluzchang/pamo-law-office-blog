@@ -1,0 +1,159 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+const articles = (await getCollection('articles'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => +b.data.date - +a.data.date);
+---
+
+<BaseLayout title="熱門法律問題">
+  <main class="relative min-h-screen overflow-hidden">
+    <div class="pointer-events-none fixed w-full h-full top-0 right-0 inset-0 z-10">
+      <img src="/assets/article_bg.svg" alt="" class="w-full h-full object-cover" />
+    </div>
+
+    <section class="relative mx-auto max-w-6xl px-6 pb-24 mt-5 pt-10 md:pt-14 z-20">
+      <div class="mx-auto max-w-3xl text-center">
+        <h1 class="mt-10 text-4xl font-black tracking-tight md:text-6xl">
+          熱門法律問題
+        </h1>
+
+        <form id="article-search-form" class="mx-auto mt-10 flex max-w-xl overflow-hidden border border-[#d6aa8c] bg-white">
+          <input
+            id="article-search-input"
+            type="search"
+            name="q"
+            placeholder="輸入關鍵字"
+            class="w-full bg-transparent px-6 py-3 text-sm outline-none placeholder:text-neutral-400"
+          />
+          <button
+            type="submit"
+            class="bg-[#c69c7b] px-6 py-3 text-sm font-bold text-black transition hover:opacity-90 whitespace-nowrap"
+          >
+            搜尋
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-14 flex flex-wrap items-center justify-center gap-4 md:gap-6">
+        <a href="/articles/" class="filter-pill current">全部</a>
+        <a href="/articles/category/chehuo/" class="filter-pill">車禍</a>
+        <a href="/articles/category/budongchan/" class="filter-pill">不動產</a>
+        <a href="/articles/category/yichan/" class="filter-pill">遺產</a>
+      </div>
+
+      <div id="articles-list" class="mx-auto mt-12 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+        {articles.length > 0 ? (
+          articles.map((article) => (
+            <div
+              class="js-article"
+              data-title={article.data.title.toLowerCase()}
+              data-description={(article.data.description || '').toLowerCase()}
+            >
+              <ArticleCard
+                title={article.data.title}
+                href={`/articles/${article.id}/`}
+                image={article.data.cover}
+                categoryLabel={article.data.categoryLabel}
+                categorySlug={article.data.category}
+              />
+            </div>
+          ))
+        ) : (
+          <div class="col-span-full py-20 text-center text-base text-neutral-500 md:text-lg">
+            目前沒有文章。
+          </div>
+        )}
+      </div>
+
+      <div id="articles-empty" class="hidden py-20 text-center text-base text-neutral-500 md:text-lg">
+        找不到符合條件的文章。
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script is:inline>
+  function initArticleSearch() {
+    const form = document.querySelector('#article-search-form');
+    const input = document.querySelector('#article-search-input');
+    const cards = document.querySelectorAll('.js-article');
+    const emptyState = document.querySelector('#articles-empty');
+    const list = document.querySelector('#articles-list');
+
+    if (!form || !input || !list) return;
+
+    function getKeywordFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get('q') || '').trim().toLowerCase();
+    }
+
+    function updateUrl(keyword) {
+      const url = new URL(window.location.href);
+
+      if (keyword) {
+        url.searchParams.set('q', keyword);
+      } else {
+        url.searchParams.delete('q');
+      }
+
+      window.history.replaceState({}, '', url.toString());
+    }
+
+    function runFilter(keyword) {
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const title = card.dataset.title || '';
+        const description = card.dataset.description || '';
+        const matched =
+          !keyword ||
+          title.includes(keyword) ||
+          description.includes(keyword);
+
+        card.style.display = matched ? '' : 'none';
+
+        if (matched) visibleCount += 1;
+      });
+
+      if (emptyState) {
+        emptyState.classList.toggle('hidden', visibleCount !== 0);
+      }
+
+      list.classList.toggle('hidden', visibleCount === 0);
+    }
+
+    const initialKeyword = getKeywordFromUrl();
+    input.value = initialKeyword;
+    runFilter(initialKeyword);
+
+    if (!form.dataset.bound) {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const keyword = (input.value || '').trim().toLowerCase();
+        updateUrl(keyword);
+        runFilter(keyword);
+
+        if (window.gtag && keyword) {
+          window.gtag('event', 'search', {
+            search_term: keyword,
+            location: 'articles_index'
+          });
+        }
+      });
+
+      input.addEventListener('input', () => {
+        const keyword = (input.value || '').trim().toLowerCase();
+        updateUrl(keyword);
+        runFilter(keyword);
+      });
+
+      form.dataset.bound = 'true';
+    }
+  }
+
+  initArticleSearch();
+  document.addEventListener('astro:page-load', initArticleSearch);
+</script>

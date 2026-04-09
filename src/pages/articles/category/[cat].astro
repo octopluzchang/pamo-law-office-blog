@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const cats = ['chehuo', 'budongchan', 'yichan'];
+  return cats.map((cat) => ({
+    params: { cat },
+  }));
+}
+
+const { cat } = Astro.params;
+
+const categoryLabels: Record<string, string> = {
+  chehuo: '車禍',
+  budongchan: '不動產',
+  yichan: '遺產',
+};
+
+const articles = (await getCollection('articles'))
+  .filter((item) => !item.data.draft && item.data.category === cat)
+  .sort((a, b) => +b.data.date - +a.data.date);
+
+const currentCat = cat ?? 'all';
+---
+
+<BaseLayout title="熱門法律問題">
+  <main class="relative min-h-screen overflow-hidden">
+    <div class="pointer-events-none fixed w-full h-full top-0 right-0 inset-0 z-10">
+      <img src="/assets/article_bg.svg" alt="" class="w-full h-full object-cover" />
+    </div>
+
+    <section class="relative mx-auto max-w-6xl px-6 pb-24 mt-5 pt-10 md:pt-14 z-20">
+      <div class="mx-auto max-w-3xl text-center">
+        <h1 class="mt-10 text-4xl font-black tracking-tight md:text-6xl">
+          熱門法律問題
+        </h1>
+
+        <!-- 搜尋 -->
+        <form id="article-search-form" class="mx-auto mt-10 flex max-w-xl overflow-hidden border border-[#d6aa8c] bg-white">
+          <input
+            id="article-search-input"
+            type="search"
+            placeholder={`搜尋${categoryLabels[cat] || ''}文章`}
+            class="w-full bg-transparent px-6 py-3 text-sm outline-none placeholder:text-neutral-400"
+          />
+          <button
+            type="submit"
+            class="bg-[#c69c7b] px-6 py-3 text-sm font-bold text-black transition hover:opacity-90 whitespace-nowrap"
+          >
+            搜尋
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-14 flex flex-wrap items-center justify-center gap-4 md:gap-6">
+        <a href="/articles/" class="filter-pill">全部</a>
+        <a href="/articles/category/chehuo/" class:list={['filter-pill', currentCat === 'chehuo' && 'current']}>車禍</a>
+        <a href="/articles/category/budongchan/" class:list={['filter-pill', currentCat === 'budongchan' && 'current']}>不動產</a>
+        <a href="/articles/category/yichan/" class:list={['filter-pill', currentCat === 'yichan' && 'current']}>遺產</a>
+      </div>
+
+      <div id="articles-list" class="mx-auto mt-12 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+        {articles.length > 0 ? (
+          articles.map((article) => (
+            <div
+              class="js-article"
+              data-title={article.data.title.toLowerCase()}
+              data-description={(article.data.description || '').toLowerCase()}
+            >
+              <ArticleCard
+                title={article.data.title}
+                href={`/articles/${article.id}/`}
+                image={article.data.cover}
+                categoryLabel={article.data.categoryLabel}
+                categorySlug={article.data.category}
+              />
+            </div>
+          ))
+        ) : (
+          <div class="col-span-full py-20 text-center text-base text-neutral-500 md:text-lg">
+            目前沒有文章。
+          </div>
+        )}
+      </div>
+
+      <div id="articles-empty" class="hidden py-20 text-center text-base text-neutral-500 md:text-lg">
+        找不到符合條件的文章。
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+    const form = document.querySelector<HTMLFormElement>('#article-search-form');
+    const input = document.querySelector<HTMLInputElement>('#article-search-input');
+    const cards = document.querySelectorAll<HTMLElement>('.js-article');
+    const emptyState = document.querySelector<HTMLElement>('#articles-empty');
+    const list = document.querySelector<HTMLElement>('#articles-list');
+
+  function runFilter() {
+    const keyword = (input?.value || '').trim().toLowerCase();
+    let visibleCount = 0;
+
+    cards.forEach((card) => {
+      const title = card.dataset.title || '';
+      const description = card.dataset.description || '';
+      const matched = !keyword || title.includes(keyword) || description.includes(keyword);
+
+      card.style.display = matched ? '' : 'none';
+
+      if (matched) visibleCount += 1;
+    });
+
+    if (emptyState) {
+      emptyState.classList.toggle('hidden', visibleCount !== 0);
+    }
+
+    if (list) {
+      list.classList.toggle('hidden', visibleCount === 0);
+    }
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    runFilter();
+  });
+
+  input?.addEventListener('input', runFilter);
+</script>
