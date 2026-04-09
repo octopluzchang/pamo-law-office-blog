@@ -5,22 +5,34 @@ interface Props {
   image?: string;
   categoryLabel?: string;
   categorySlug?: string;
+  trackingEvent?: string;
+  trackingLocation?: string;
+  trackingId?: string;
 }
-
 const {
   title,
   href,
   image,
   categoryLabel,
-  categorySlug
+  categorySlug,
+  trackingEvent,
+  trackingLocation,
+  trackingId
 } = Astro.props;
 
 const coverImage = image ?? '/assets/default_cover.png';
 ---
 
 <article class="article-card">
-  <a href={href} class="block">
-    <div class="aspect-4/3 bg-[#2e2e2e] relative overflow-hidden">
+  <a
+    href={href}
+    onclick={trackingEvent ? `window.gtag && window.gtag('event', '${trackingEvent}', {
+      item_id: '${trackingId || ''}',
+      location: '${trackingLocation || ''}'
+    })` : undefined}
+    class="block"
+  >
+    <div class="aspect-[4/3] bg-[#2e2e2e] relative overflow-hidden">
       <img
         src="/assets/hero_bg.svg"
         alt=""
@@ -35,7 +47,7 @@ const coverImage = image ?? '/assets/default_cover.png';
       />
     </div>
 
-    <div class="min-h-24.5 px-6 py-5 md:min-h-27.5 flex flex-col items-center justify-center text-center">
+    <div class="min-h-[98px] px-6 py-5 md:min-h-[110px] flex flex-col items-center justify-center text-center">
       {categoryLabel && categorySlug && (
         <div class="mb-3">
           <a
@@ -47,9 +59,7 @@ const coverImage = image ?? '/assets/default_cover.png';
         </div>
       )}
 
-      <div class="min-h-14.5 flex items-center">
-        <h5 class="article-card-title">{title}</h5>
-      </div>
+      <p class="article-card-title">{title}</p>
     </div>
   </a>
 </article>

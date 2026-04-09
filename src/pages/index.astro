@@ -23,7 +23,7 @@ const services = [
 const team = [
   { name: '洪建全', title: '毒品／詐欺', exp: '洗錢／一般民刑事訴訟', img: '/assets/team_4.png' },
   { name: '施尚宏', title: '交通鑒定', exp: '車禍民刑事訴訟', img: '/assets/team_1.png' },
-  { name: '何盈得', title: '契約／不動產', exp: '醫療糾紛／家事', img: '/assets/team_3.png' },
+  { name: '何盈德', title: '契約／不動產', exp: '醫療糾紛／家事', img: '/assets/team_3.png' },
   { name: '吳瑩庭', title: '損害賠償／租屋蟑螂', exp: '性騷擾侵害案件', img: '/assets/team_2.png' }
 ];
 
@@ -93,7 +93,12 @@ const products = [
     <section id="articles" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
       <h2 class="text-center text-3xl md:text-5xl">熱門法律問題</h2>
 
-      <form method="get" action="/articles/" class="mx-auto mt-10 flex max-w-xl overflow-hidden border border-[#d6aa8c] bg-white">
+      <form
+        method="get"
+        action="/articles/"
+        onsubmit="const keyword = this.q.value.trim(); if (window.gtag && keyword) { window.gtag('event', 'search', { search_term: keyword, location: 'home_articles_search' }); }"
+        class="mx-auto mt-10 flex max-w-xl overflow-hidden border border-[#d6aa8c] bg-white"
+      >
         <input
           type="search"
           name="q"
@@ -113,6 +118,9 @@ const products = [
             image={article.data.cover}
             categoryLabel={article.data.categoryLabel}
             categorySlug={article.data.category}
+            trackingEvent="article_click"
+            trackingLocation="home_articles"
+            trackingId={article.id}
           />
         ))}
       </div>
@@ -146,8 +154,12 @@ const products = [
         </div>
 
         <a 
-        href={`/cases/${item.id}/`}
-        class="mt-4 inline-block text-lg font-black text-[#c69c7b] transition group-hover:opacity-80 md:text-xl">
+          href={`/cases/${item.id}/`}
+          onclick={`window.gtag && window.gtag('event', 'case_click', {
+            case_id: '${item.id}',
+            location: 'home_cases'
+          })`}
+          class="mt-4 inline-block text-lg font-black text-[#c69c7b] transition group-hover:opacity-80 md:text-xl">
           看完整案例 →
         </a>
       </div>
@@ -175,7 +187,7 @@ const products = [
             rel="noopener noreferrer"
             onclick="window.gtag && window.gtag('event', 'cta_click', {
               cta_name: 'bottom_line_consult',
-              location: 'home_hero',
+              location: 'home_bottom_cta',
               destination: 'line'
             })"
             class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
