@@ -18,10 +18,9 @@ const cases = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/cases' }),
   schema: z.object({
     title: z.string(),
-    description: z.string().optional(),
+    description: z.string().optional().default(''),
     date: z.date(),
-    cover: z.string().optional(),
-    label: z.string(),
+    cover: z.string().optional().default(''),
     amount: z.string(),
     unit: z.string().default('萬'),
     draft: z.boolean().optional().default(false)

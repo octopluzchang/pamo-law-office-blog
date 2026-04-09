@@ -8,11 +8,10 @@ const allArticles = (await getCollection('articles'))
   .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
   .slice(0, 3);
 
-const caseStats = [
-  { label: '車禍成功求償', number: '170', unit: '萬', url: '/cases/' },
-  { label: '車禍少賠', number: '56', unit: '萬', url: '/cases/' },
-  { label: '成功取得資遣費', number: '18', unit: '萬', url: '/cases/' }
-];
+const featuredCases = (await getCollection('cases'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => +b.data.date - +a.data.date)
+  .slice(0, 3);
 
 const services = [
   { title: '車禍和解', img: '/assets/service_1.png' },
@@ -126,23 +125,35 @@ const products = [
     </section>
 
     <section id="cases" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
-      <h2 class="text-center text-3xl md:text-5xl">成功案例</h2>
+  <h2 class="text-center text-3xl md:text-5xl">成功案例</h2>
 
-      <div class="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-3">
-        {caseStats.map((item) => (
-          <div class="text-center">
-            <h3 class="text-2xl font-black md:text-3xl">{item.label}</h3>
-            <div class="mt-5 font-black text-7xl leading-none md:text-[88px]">
-              {item.number}
-              <span class="ml-1 text-4xl md:text-5xl">{item.unit}</span>
-            </div>
-            <a href={item.url} class="mt-4 font-sans font-black inline-block text-xl text-[#c69c7b] hover:opacity-80">
-              前往案例
-            </a>
-          </div>
-        ))}
+  <div class="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-3">
+    {featuredCases.map((item) => (
+      <div
+        class="group block text-center"
+      >
+        <h3 class="text-2xl font-black leading-tight md:text-3xl">
+          {item.data.title}
+        </h3>
+
+        <p class="mt-3 text-sm leading-6 text-neutral-600 md:text-base">
+          {item.data.description}
+        </p>
+
+        <div class="mt-5 font-black text-7xl leading-none md:text-[88px]">
+          {item.data.amount}
+          <span class="ml-1 text-4xl md:text-5xl">{item.data.unit}</span>
+        </div>
+
+        <a 
+        href={`/cases/${item.id}/`}
+        class="mt-4 inline-block text-lg font-black text-[#c69c7b] transition group-hover:opacity-80 md:text-xl">
+          看完整案例 →
+        </a>
       </div>
-    </section>
+    ))}
+  </div>
+</section>
 
     <section class="bg-black text-white">
       <div class="mx-auto max-w-4xl px-6 py-20 text-center md:py-24">
