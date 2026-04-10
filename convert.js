@@ -17,11 +17,30 @@ const parser = new XMLParser({
 });
 
 const json = parser.parse(xml);
-const turndown = new TurndownService();
+const turndown = new TurndownService({
+  headingStyle: 'atx',
+  codeBlockStyle: 'fenced',
+});
 
 const items = Array.isArray(json?.rss?.channel?.item)
   ? json.rss.channel.item
   : [json?.rss?.channel?.item].filter(Boolean);
+
+// 保留有 id 的標題，讓舊錨點還能跳
+turndown.addRule('headingWithId', {
+  filter: function (node) {
+    return (
+      ['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(node.nodeName) &&
+      node.getAttribute &&
+      node.getAttribute('id')
+    );
+  },
+  replacement: function (content, node) {
+    const id = node.getAttribute('id');
+    const tag = node.nodeName.toLowerCase();
+    return `\n<${tag} id="${id}">${content}</${tag}>\n`;
+  }
+});
 
 // 工具：確保值一定是陣列
 function toArray(value) {
@@ -67,6 +86,40 @@ function getThumbnailId(item) {
   return '';
 }
 
+// 工具：做安全檔名
+function sanitizeFilename(filename) {
+  return String(filename || '')
+    .trim()
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+}
+
+// 工具：用 title fallback slug
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+// 工具：避免同名覆蓋
+function getUniqueFilePath(baseName) {
+  let candidate = `./output/${baseName}.md`;
+  let counter = 2;
+
+  while (fs.existsSync(candidate)) {
+    candidate = `./output/${baseName}-${counter}.md`;
+    counter += 1;
+  }
+
+  return candidate;
+}
+
 // 先建立 attachment 對照表：attachment post_id -> attachment_url
 const attachmentMap = new Map();
 
@@ -89,6 +142,7 @@ items.forEach((item, index) => {
   const rawTitle = item.title || '未命名';
   const rawContent = item['content:encoded'] || '';
   const rawDate = item.pubDate;
+  const rawPostName = String(item['wp:post_name'] || '').trim();
 
   // 1. 先抓精選圖片
   const thumbnailId = getThumbnailId(item);
@@ -99,8 +153,14 @@ items.forEach((item, index) => {
     cover = extractFirstImage(rawContent);
   }
 
+  // 3. 清掉常見目錄區塊，避免搬過去變髒
+  const cleanedContent = String(rawContent)
+    .replace(/<div[^>]*class="[^"]*ez-toc[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<nav[^>]*class="[^"]*toc[^"]*"[^>]*>[\s\S]*?<\/nav>/gi, '')
+    .replace(/<div[^>]*id="ez-toc-container"[^>]*>[\s\S]*?<\/div>/gi, '');
+
   // 轉 markdown
-  let markdown = turndown.turndown(rawContent);
+  let markdown = turndown.turndown(cleanedContent);
 
   // 避免 frontmatter 被內文的 --- 破壞
   markdown = markdown.replace(/^---$/gm, '');
@@ -118,6 +178,11 @@ items.forEach((item, index) => {
   const { slug, label } = detectCategory(`${rawTitle} ${plainText}`);
   const safeCover = String(cover || '').replace(/"/g, '\\"');
 
+  // 4. 檔名優先用 WP 原本 slug
+  const baseName = sanitizeFilename(
+    rawPostName || slugify(rawTitle) || `article-${index}`
+  );
+
   const file = `---
 title: "${safeTitle}"
 description: "${safeDescription}"
@@ -131,7 +196,8 @@ draft: false
 ${markdown}
 `;
 
-  fs.writeFileSync(`./output/article-${index}.md`, file);
+  const outputPath = getUniqueFilePath(baseName);
+  fs.writeFileSync(outputPath, file);
 });
 
 console.log('轉換完成');

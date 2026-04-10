@@ -12,15 +12,13 @@ draft: false
 
 當對方因肇事犯下「過失致死罪」時，我方可從哪些途徑爭取賠償？讓PAMO車禍線上律師團隊為你詳細解析：
 
-目錄：
-
+## 目錄：
 
 [一、直接向肇事者請求賠償  
 ](#heading-1)[二、透過保險求償  
 ](#heading-2)[三、家屬可否申請犯罪補償金？](#heading-3)
 
-一、直接向肇事者請求賠償
-------------
+<h2 id="heading-1">一、直接向肇事者請求賠償</h2>
 
 有些人說：告刑事解百件，來一百件車禍通通告刑事都有用，起訴之後再附帶民事就好了。
 
@@ -74,8 +72,7 @@ draft: false
 
 [**我想諮詢律師｜點我加 Line**](https://line.me/R/ti/p/@725wisyn)
 
-二、透過保險求償
---------
+<h2 id="heading-2">二、透過保險求償</h2>
 
 ### 1.先向強制汽車責任保險（強制險）提出理賠申請
 
@@ -113,9 +110,8 @@ draft: false
 [車禍保險公司理賠流程大公開｜掌握4步驟，案件處理穩妥到位  
 ](https://www.pamolaw.com/how-do-insurance-companies-deal-with-claims-in-a-car-accident/)[\[法律觀點\] 收到民事判決後，我該怎麼做才能拿到錢?](https://www.pamolaw.com/how-to-collect-money-after-winning-a-judgment/)
 
-  
-三、家屬可否申請犯罪補償金？
------------------
+<h2 id="heading-3">  
+三、家屬可否申請犯罪補償金？</h2>
 
 不行！
 
