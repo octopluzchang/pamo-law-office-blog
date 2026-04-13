@@ -8,10 +8,10 @@ interface Props {
 }
 
 const { title, description, cover } = Astro.props;
-const coverImage = cover ?? '/assets/default_cover.png';
+const coverImage = cover ?? '/cover.png';
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} cover={coverImage}>
   <main class="min-h-screen">
     <div class="bg-[#f3f3f1] pointer-events-none fixed w-full h-full top-0 right-0 inset-0 z-20">
       <img src="/assets/article_bg.svg" alt="" class="w-full h-full object-cover" />
