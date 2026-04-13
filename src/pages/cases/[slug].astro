@@ -20,6 +20,11 @@ const moreArticles = (await getCollection('articles'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
   .slice(0, 3);
+
+const postUrl = new URL(Astro.url.pathname, Astro.site).toString();
+
+const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`;
+const lineShareUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(postUrl)}`;
 ---
 
 <ArticleLayout
@@ -28,10 +33,32 @@ const moreArticles = (await getCollection('articles'))
   cover={caseItem.data.cover}
 >
   <div slot="share" class="mt-6 flex justify-center gap-3">
-    <span class="share-icon"><span class="text-xs font-black">f</span></span>
-    <span class="share-icon"><span class="text-[10px] font-black">LINE</span></span>
-    <span class="share-icon"><span class="text-xs font-black">⋯</span></span>
-  </div>
+  <a 
+    href={facebookShareUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="share-icon"
+  >
+    <span class="text-xs font-black">f</span>
+  </a>
+
+  <a 
+    href={lineShareUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="share-icon"
+  >
+    <span class="text-[10px] font-black">LINE</span>
+  </a>
+
+  <button
+    class="share-icon js-share-more"
+    data-url={postUrl}
+    data-title={caseItem.data.title}
+  >
+    <span class="text-xs font-black">⋯</span>
+  </button>
+</div>
 
   <div class="prose-pamo mt-8">
     <Content />
