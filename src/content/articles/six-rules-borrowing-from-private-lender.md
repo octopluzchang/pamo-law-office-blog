@@ -1,10 +1,10 @@
 ---
-title: "我借100萬一定會拿到100萬嗎？與金主借款潛藏的6個遊戲規則"
-description: "金主願意將款項借你，讓你放手一搏，那你就必須要遵守金主的遊戲規則。這遊戲規則包含以下六項"
+title: 我借100萬一定會拿到100萬嗎？與金主借款潛藏的6個遊戲規則
+description: 金主願意將款項借你，讓你放手一搏，那你就必須要遵守金主的遊戲規則。這遊戲規則包含以下六項
 date: 2026-04-23
-cover: "https://www.pamolaw.com/wp-content/uploads/2026/04/ChatGPT-Image-2026年4月24日-下午03_54_29.png"
+cover: https://www.pamolaw.com/wp-content/uploads/2026/04/我借100萬一定會拿到100萬嗎？與金主借款潛藏的6個遊戲規則_略策法律事務所.png
 category: jiedaigenyi
-categoryLabel: "借貸爭議"
+categoryLabel: 借貸爭議
 draft: false
 ---
 
