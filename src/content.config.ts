@@ -8,7 +8,7 @@ const articles = defineCollection({
     description: z.string().optional(),
     date: z.date(),
     cover: z.string().optional(),
-    category: z.enum(['chehuo', 'budongchan', 'yichan']),
+    category: z.enum(['chehuo', 'budongchan', 'yichan', 'jiedaigenyi']),
     categoryLabel: z.string(),
     draft: z.boolean().optional().default(false)
   })
