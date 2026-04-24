@@ -1,0 +1,68 @@
+backend:
+  name: git-gateway
+  branch: main
+
+# 本地開發時，啟動 `npx decap-server` 即可不需 OAuth 直接編輯本地檔案
+local_backend: true
+
+media_folder: "public/covers"
+public_folder: "/covers"
+
+# 預設 commit 訊息（中文）
+publish_mode: simple
+locale: zh_Hant
+
+slug:
+  encoding: "ascii"
+  clean_accents: true
+  sanitize_replacement: "-"
+
+collections:
+  - name: "articles"
+    label: "文章"
+    label_singular: "文章"
+    folder: "src/content/articles"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{category}}"
+    sortable_fields: ["date", "title"]
+    fields:
+      - { label: "標題", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text", required: false }
+      - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", picker_utc: false }
+      - { label: "封面圖", name: "cover", widget: "image", required: false, allow_multiple: false }
+      - label: "分類"
+        name: "category"
+        widget: "select"
+        options:
+          - { label: "車禍", value: "chehuo" }
+          - { label: "不動產", value: "budongchan" }
+          - { label: "遺產", value: "yichan" }
+      - label: "分類標籤（顯示文字，需與上方分類對應）"
+        name: "categoryLabel"
+        widget: "select"
+        options: ["車禍", "不動產", "遺產"]
+      - { label: "草稿", name: "draft", widget: "boolean", default: false, required: false }
+      - { label: "內容", name: "body", widget: "markdown" }
+
+  - name: "cases"
+    label: "案例"
+    label_singular: "案例"
+    folder: "src/content/cases"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    summary: "{{title}} — {{amount}} {{unit}}"
+    sortable_fields: ["date", "amount"]
+    fields:
+      - { label: "標題", name: "title", widget: "string" }
+      - { label: "描述", name: "description", widget: "text", required: false, default: "" }
+      - { label: "日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", picker_utc: false }
+      - { label: "封面圖", name: "cover", widget: "image", required: false, default: "", allow_multiple: false }
+      - { label: "金額", name: "amount", widget: "string", hint: "例如：200" }
+      - { label: "單位", name: "unit", widget: "string", default: "萬" }
+      - { label: "草稿", name: "draft", widget: "boolean", default: false, required: false }
+      - { label: "內容", name: "body", widget: "markdown" }
