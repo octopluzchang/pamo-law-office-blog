@@ -1,10 +1,10 @@
 ---
-title: "與民間金主簽約，須注意哪些條件？律師為你剖析，借貸前必看"
-description: "借款，法律的要件就是「有說好且有把錢給出去」。民間借款是怎麼一回事，由專業法律團隊為你拆解"
+title: 與民間金主簽約，須注意哪些條件？律師為你剖析，借貸前必看
+description: 借款，法律的要件就是「有說好且有把錢給出去」。民間借款是怎麼一回事，由專業法律團隊為你拆解
 date: 2026-04-23
-cover: "https://www.pamolaw.com/wp-content/uploads/2026/04/ChatGPT-Image-2026年4月24日-下午02_52_53.png"
+cover: https://www.pamolaw.com/wp-content/uploads/2026/04/與民間金主簽約，須注意哪些條件？律師為你剖析，借貸前必看_略策法律事務所.png
 category: jiedaigenyi
-categoryLabel: "借貸爭議"
+categoryLabel: 借貸爭議
 draft: false
 ---
 
