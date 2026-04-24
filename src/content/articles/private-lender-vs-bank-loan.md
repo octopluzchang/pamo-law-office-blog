@@ -1,10 +1,10 @@
 ---
-title: "民間金主與一般貸款的差異在哪？律師解析4個差異點"
-description: "本文在比較民間金主與一般貸款的關鍵差異點。金主放款的本質，與銀行放款的盈利模式相同，以較低成本的資金，透過借貸而換取較高收益的利息，並且通常附有擔保品。不同的地方在於：銀行體質較健康，放款具有規模，且事前審查細緻。而金主的放款模式具有較為外顯的掠奪性質。"
+title: 民間金主與一般貸款的差異在哪？律師解析4個差異點
+description: 本文在比較民間金主與一般貸款的關鍵差異點。金主放款的本質，與銀行放款的盈利模式相同，以較低成本的資金，透過借貸而換取較高收益的利息，並且通常附有擔保品。不同的地方在於：銀行體質較健康，放款具有規模，且事前審查細緻。而金主的放款模式具有較為外顯的掠奪性質。
 date: 2026-04-23
-cover: "https://www.pamolaw.com/wp-content/uploads/2026/04/ChatGPT-Image-2026年4月24日-下午04_15_45.png"
+cover: https://www.pamolaw.com/wp-content/uploads/2026/04/ChatGPT-Image-2026年4月24日-下午06_25_53.png
 category: jiedaigenyi
-categoryLabel: "借貸爭議"
+categoryLabel: 借貸爭議
 draft: false
 ---
 
