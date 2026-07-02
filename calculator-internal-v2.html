@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>借貸還款計算器｜略策法律事務所</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&family=Noto+Serif+TC:wght@200..900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111111;
+  --navy: #162752;
+  --paper: #fffaf6;
+  --muted: #6f6f6f;
+  --line: #e5d8cf;
+  --gold: #d3a07c;
+  --gold-dark: #a87249;
+  --danger: #b8452f;
+}
+body {
+  font-family: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f7f4f1; color: var(--ink); min-height: 100vh; line-height: 1.5;
+}
+.site-header { background: rgba(17,17,17,.94); padding: 14px 20px; position: sticky; top: 0; z-index: 50; border-bottom: 1px solid rgba(211,160,124,.22); backdrop-filter: blur(12px); }
+.site-header-inner { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.site-logo { display: flex; align-items: center; color: var(--gold); text-decoration: none; }
+.site-logo img { height: 48px; width: auto; display: block; }
+.site-nav { display: flex; align-items: center; gap: 24px; }
+.site-nav a { color: var(--gold); font-size: 14px; font-weight: 900; text-decoration: none; }
+.site-nav a.cta { border: 1px solid var(--gold); border-radius: 999px; padding: 9px 18px; }
+.tool-hero { background: #111; color: white; text-align: center; padding: 58px 20px 42px; }
+.tool-kicker { color: var(--gold); font-size: 13px; font-weight: 900; letter-spacing: .24em; }
+.tool-title { font-family: 'Noto Serif TC', serif; font-size: clamp(32px, 6vw, 56px); font-weight: 900; line-height: 1.28; margin-top: 16px; }
+.tool-sub { max-width: 680px; margin: 18px auto 0; color: rgba(255,255,255,.78); font-size: 15px; line-height: 1.9; font-weight: 700; }
+.body { max-width: 960px; margin: 0 auto; padding: 32px 16px 100px; }
+@media (max-width: 720px) {
+  .site-header-inner { justify-content: center; }
+  .site-logo img { height: 42px; }
+  .site-nav { display: none; }
+  .tool-hero { padding: 48px 20px 34px; }
+}
+
+.sec-label { font-size: 12px; font-weight: 900; letter-spacing: .1em; color: var(--gold-dark); margin: 26px 0 10px; }
+
+.card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 22px 20px; box-shadow: 0 8px 24px rgba(17,17,17,.06); margin-bottom: 14px; }
+.round-card { border-left: 4px solid var(--gold); }
+.round-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.round-tag { background: var(--ink); color: var(--gold); font-size: 12px; font-weight: 900; padding: 5px 12px; border-radius: 999px; white-space: nowrap; }
+.round-title-input { flex: 1; border: none; border-bottom: 1.5px dashed #d8c6ba; font-size: 15px; font-weight: 800; font-family: inherit; color: var(--ink); padding: 4px 2px; outline: none; background: transparent; min-width: 0; }
+.round-title-input:focus { border-bottom-color: var(--gold); }
+.round-del { background: #fff4ef; color: var(--danger); border: 1px solid #edc5b9; border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap; }
+
+.subhead { font-size: 12px; font-weight: 900; color: var(--gold-dark); background: #fff7f0; border: 1px solid #ead2c0; border-radius: 6px; padding: 7px 10px; margin: 18px 0 10px; }
+
+.fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.fgrid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .fgrid, .fgrid-3 { grid-template-columns: 1fr; } }
+.field { margin-bottom: 4px; }
+.label { display: block; font-size: 12px; font-weight: 800; color: #3a342f; margin-bottom: 6px; }
+.label .law { font-weight: 600; color: var(--gold-dark); margin-left: 4px; font-size: 10px; background: #fff7ef; padding: 1px 5px; border-radius: 4px; }
+.label .hint { font-weight: 400; color: #9ca3af; margin-left: 4px; font-size: 11px; }
+.label .real { color: #059669; font-size: 10px; margin-left: 4px; font-weight: 700; }
+.label .infl { color: #dc2626; font-size: 10px; margin-left: 4px; font-weight: 700; }
+
+.input-unit { display: flex; align-items: center; border: 1.5px solid #d8c6ba; border-radius: 8px; overflow: hidden; background: #fff; transition: border-color .2s, box-shadow .2s; }
+.input-unit:focus-within { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(211,160,124,.18); }
+.input-unit input { flex: 1; min-width: 0; border: none; outline: none; padding: 10px 12px; font-size: 15px; font-family: inherit; color: var(--ink); background: transparent; }
+.input-unit input::placeholder { color: #c0c8d5; }
+.input-unit .unit { padding: 0 12px; font-size: 13px; color: var(--muted); font-weight: 700; border-left: 1px solid #eee2da; background: #faf6f2; align-self: stretch; display: flex; align-items: center; white-space: nowrap; }
+select.sel { border: 1.5px solid #d8c6ba; border-radius: 8px; padding: 10px 8px; font-size: 14px; font-family: inherit; color: var(--ink); background: #fff; outline: none; width: 100%; }
+select.sel:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(211,160,124,.18); }
+.rate-row { display: flex; gap: 8px; }
+.rate-row .input-unit { flex: 1; }
+.rate-row select { width: 96px; }
+.date-row { display: flex; gap: 8px; }
+.date-row select { flex: 1; }
+
+.toggle-row { display: flex; align-items: center; justify-content: space-between; border: 1.5px solid #eadbd1; border-radius: 8px; padding: 12px 14px; cursor: pointer; transition: border-color .15s, background .15s; margin-top: 10px; }
+.toggle-row.on { border-color: var(--danger); background: #fff4ef; }
+.toggle-row-label { font-size: 13px; font-weight: 700; color: #374151; }
+.toggle-row-label small { display: block; font-weight: 400; color: #9ca3af; font-size: 11px; margin-top: 2px; }
+.toggle-sw { width: 42px; height: 23px; border-radius: 12px; background: #d1d5db; position: relative; transition: background .2s; flex-shrink: 0; }
+.toggle-sw::after { content: ''; position: absolute; width: 17px; height: 17px; border-radius: 50%; background: #fff; top: 3px; left: 3px; transition: left .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.toggle-sw.on { background: var(--danger); }
+.toggle-sw.on::after { left: 22px; }
+
+.btn { padding: 13px 20px; border-radius: 8px; font-size: 15px; font-weight: 900; font-family: inherit; cursor: pointer; border: none; transition: transform .1s, background .2s; }
+.btn:active { transform: scale(.98); }
+.btn-primary { background: var(--gold); color: #111; box-shadow: 0 8px 20px rgba(211,160,124,.26); width: 100%; }
+.btn-primary:hover { background: #e3b38f; }
+.btn-add { background: #fff8f3; color: var(--gold-dark); border: 1.5px dashed var(--gold); width: 100%; margin-bottom: 14px; }
+.btn-print { background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; border: none; }
+.btn-reset { background: transparent; color: var(--muted); border: 1.5px solid #d8c6ba; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer; }
+
+#results { display: none; }
+.result-round { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 22px 20px; margin-bottom: 16px; box-shadow: 0 8px 24px rgba(17,17,17,.06); border-top: 4px solid var(--gold); }
+.result-round-head { font-size: 18px; font-weight: 900; color: var(--gold-dark); margin-bottom: 4px; }
+.result-round-sub { font-size: 12px; color: #6b7280; margin-bottom: 16px; line-height: 1.7; }
+.block-title { font-size: 12px; font-weight: 900; letter-spacing: .08em; color: var(--gold-dark); margin: 22px 0 10px; padding-bottom: 6px; border-bottom: 2px solid #f1dfd3; }
+
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.cbox { border-radius: 8px; padding: 14px; text-align: center; }
+.cbox-claim { background: #f9fafb; border: 1px solid #e5e7eb; }
+.cbox-legal { background: #fff8f3; border: 2px solid var(--gold); }
+.cbox .clabel { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.cbox .cnum { font-size: 23px; font-weight: 900; line-height: 1.1; }
+.cbox-claim .cnum { color: #6b7280; }
+.cbox-legal .cnum { color: var(--gold-dark); }
+.cbox .csub { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+.gap-bar { background: #ecfdf5; border: 1px solid #6ee7b7; border-radius: 8px; padding: 11px 14px; font-size: 14px; color: #065f46; line-height: 1.6; margin-bottom: 4px; }
+.gap-bar b { color: #047857; font-size: 17px; }
+
+.verdict { background: #fff8f3; border: 2px solid var(--gold); border-radius: 8px; padding: 18px; text-align: center; margin: 4px 0 16px; }
+.verdict-label { font-size: 12px; font-weight: 900; letter-spacing: .1em; color: var(--gold-dark); }
+.verdict-num { font-size: 34px; font-weight: 900; color: var(--ink); line-height: 1.1; margin: 6px 0; }
+.verdict-sub { font-size: 12px; color: #9ca3af; }
+.btn-word { background: var(--gold); color: #111; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 900; font-family: inherit; cursor: pointer; border: none; }
+
+.decomp { display: flex; flex-direction: column; gap: 0; }
+.decomp-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+.decomp-row .dk { color: #374151; }
+.decomp-row .dtag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; margin-left: 6px; white-space: nowrap; }
+.dtag.real { background: #ecfdf5; color: #059669; }
+.dtag.infl { background: #fef2f2; color: #dc2626; }
+.dtag.keep { background: #fff7ed; color: #c2410c; }
+.decomp-row .dv { font-weight: 700; color: #1a1a2e; white-space: nowrap; }
+.decomp-row .dv.minus { color: #dc2626; }
+.decomp-row.head { background: #f9fafb; font-weight: 800; }
+.decomp-row.base { background: #f0fdf4; font-weight: 800; border-top: 2px solid #6ee7b7; }
+.decomp-row.base .dk, .decomp-row.base .dv { color: #047857; }
+
+.amort-schedule { overflow-x: auto; margin: 6px 0; }
+.amort-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.amort-table th { background: #fee2e2; padding: 6px 8px; text-align: right; font-weight: 700; color: #7c2d12; border: 1px solid #fca5a5; white-space: nowrap; }
+.amort-table th:first-child { text-align: center; }
+.amort-table td { padding: 5px 8px; border: 1px solid #e5e7eb; text-align: right; color: #374151; }
+.amort-table td:first-child { text-align: center; color: #6b7280; }
+.amort-table tr:nth-child(even) td { background: #fafafa; }
+.amort-table td.principal { color: #059669; font-weight: 600; }
+.amort-table td.balance { font-weight: 700; }
+.amort-table tr.total td { background: #fee2e2; font-weight: 800; }
+.amort-table tr.total td.balance { color: #dc2626; }
+
+.scn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px; }
+@media (max-width:560px){ .scn-grid { grid-template-columns: 1fr; } }
+.scn-box { border-radius: 10px; padding: 14px; }
+.scn-base { background: #f9fafb; border: 1px solid #e5e7eb; }
+.scn-agent { background: #fff8f6; border: 2px solid #c2410c; }
+.scn-box .slabel { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; margin-bottom: 4px; }
+.scn-box .snum { font-size: 20px; font-weight: 900; line-height: 1.1; }
+.scn-base .snum { color: #6b7280; }
+.scn-agent .snum { color: #c2410c; }
+.scn-box .ssub { font-size: 11px; color: #9ca3af; margin-top: 3px; }
+
+.info-box { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #92400e; line-height: 1.7; margin: 8px 0; }
+.info-box b { color: #b45309; }
+.court-base { background: #1a1a2e; color: #fff; border-radius: 10px; padding: 16px; text-align: center; margin: 8px 0; }
+.court-base .cb-label { font-size: 12px; color: #c0c8d5; margin-bottom: 4px; }
+.court-base .cb-num { font-size: 28px; font-weight: 900; color: #fbbf24; line-height: 1.1; }
+.court-base .cb-formula { font-size: 12px; color: #9ca3af; margin-top: 8px; line-height: 1.6; }
+
+.arrears-box { background: #fef2f2; border: 2px solid #fca5a5; border-radius: 10px; padding: 14px; margin: 8px 0; }
+.arrears-box .ab-line { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; color: #374151; }
+.arrears-box .ab-line.total { font-weight: 800; color: #dc2626; border-top: 1px solid #fca5a5; margin-top: 6px; padding-top: 8px; font-size: 15px; }
+
+.summary-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 4px; }
+.summary-table th { background: var(--ink); color: var(--gold); padding: 9px 10px; text-align: right; font-weight: 800; }
+.summary-table th:first-child { text-align: left; }
+.summary-table td { padding: 9px 10px; border-bottom: 1px solid #e5e7eb; text-align: right; color: #374151; }
+.summary-table td:first-child { text-align: left; font-weight: 700; color: #1a1a2e; }
+.summary-table tr.grand td { background: #fff8f3; font-weight: 900; border-top: 2px solid var(--gold); }
+.summary-table tr.grand td.legal { color: var(--gold-dark); }
+
+.note { font-size: 12px; color: #9ca3af; line-height: 1.6; margin-top: 8px; }
+.print-bar { display: flex; gap: 8px; margin-top: 16px; }
+.disclaimer { font-size: 11px; color: #8a817b; line-height: 1.6; margin-top: 20px; padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+
+@media print {
+  .header, #input-area, .btn, .btn-add, .print-bar { display: none !important; }
+  body { background: #fff; }
+  .result-round { box-shadow: none; border: 1px solid #e5e7eb; page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-logo" href="/" aria-label="略策法律事務所首頁">
+      <img src="/assets/header_logo.svg" alt="略策法律事務所">
+    </a>
+    <nav class="site-nav" aria-label="主要導覽">
+      <a href="/#services">服務項目</a>
+      <a href="/articles/">法律問題</a>
+      <a href="/cases/">成功案例</a>
+      <a class="cta" href="https://lin.ee/wVaKLny" target="_blank" rel="noopener noreferrer">聯絡我們</a>
+    </nav>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="tool-kicker">債務協商｜借貸重整｜還款試算</div>
+  <h1 class="tool-title">借貸還款計算器</h1>
+  <p class="tool-sub">
+    先把借款金額、已還款、月還款能力與利率條件整理清楚，
+    再進一步試算可主張的還款基礎與談判空間。
+  </p>
+</section>
+
+<div class="body">
+
+  <div id="input-area">
+    <div class="card">
+      <div class="fgrid">
+        <div class="field">
+          <label class="label">客戶／案號<span class="hint">選填</span></label>
+          <div class="input-unit"><input type="text" id="caseName" placeholder="王○○ / 2026-001"></div>
+        </div>
+        <div class="field">
+          <label class="label">金主要求清償數額<span class="hint">金主亂喊的結清價，最後做合理性對比</span></label>
+          <div class="input-unit"><input type="text" id="settleQuote" inputmode="numeric" placeholder="6,000,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">借款明細（可一筆一筆建檔）</div>
+    <div id="rounds"></div>
+    <button class="btn btn-add" onclick="addRound()">＋ 新增一筆借款</button>
+
+    <button class="btn btn-primary" onclick="calcAll()">產出分析結果 →</button>
+  </div>
+
+  <div id="results">
+    <div id="results-body"></div>
+    <div class="print-bar">
+      <button class="btn-word" onclick="exportWord()">📄 輸出 Word（.docx）</button>
+      <button class="btn-print" onclick="window.print()">🖨 列印 ／ 存成 PDF</button>
+      <button class="btn-reset" onclick="backToInput()">← 回到輸入</button>
+    </div>
+    <div class="disclaimer">
+      本工具依民法 §205（年利率上限16%）、§323（清償抵充順序：費用→利息→本金）、§252（違約金酌減）、§207（不得複利）建立試算模型，
+      參照新北地院114年度訴字第107號等實務見解。結果為內部談判與訴訟評估參考，非對外保證金額；個案仍依證據與法院認定為準。
+    </div>
+  </div>
+
+</div><!-- /body -->
+
+<!-- ───────────── ROUND TEMPLATE ───────────── -->
+<template id="round-tpl">
+  <div class="card round-card" data-round>
+    <div class="round-head">
+      <span class="round-tag" data-tag>第 1 筆</span>
+      <input type="text" class="round-title-input" data-title placeholder="例：A金主 / 二胎 600萬">
+      <button class="round-del" onclick="delRound(this)">刪除</button>
+    </div>
+
+    <!-- 合約條件 -->
+    <div class="subhead">合約條件</div>
+    <div class="fgrid">
+      <div class="field">
+        <label class="label">本金（合約面額）</label>
+        <div class="input-unit"><input type="text" data-prin inputmode="numeric" placeholder="5,760,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+      <div class="field">
+        <label class="label">約定利率<span class="hint">1分＝1%/月</span></label>
+        <div class="rate-row">
+          <div class="input-unit"><input type="text" data-rate inputmode="decimal" placeholder="2"></div>
+          <select class="sel" data-ratetype>
+            <option value="monthlyfen">月息(分)</option>
+            <option value="annual">年息(%)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="fgrid">
+      <div class="field">
+        <label class="label">月還款額</label>
+        <div class="input-unit"><input type="text" data-monthly inputmode="numeric" placeholder="120,000" oninput="fmtNum(this)"><div class="unit">元/月</div></div>
+      </div>
+      <div class="field">
+        <label class="label">違約金數額<span class="law">§252 可酌減</span></label>
+        <div class="input-unit"><input type="text" data-penalty inputmode="numeric" placeholder="0" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+    </div>
+    <div class="fgrid-3">
+      <div class="field">
+        <label class="label">借款日期</label>
+        <div class="date-row">
+          <select class="sel" data-year><option value="">年</option></select>
+          <select class="sel" data-month><option value="">月</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="label">已還期數<span class="hint">留空＝依借款日</span></label>
+        <div class="input-unit"><input type="text" data-paid inputmode="numeric" placeholder="自動"><div class="unit">期</div></div>
+      </div>
+      <div class="field">
+        <label class="label">欠繳期數<span class="hint">已停繳幾期</span></label>
+        <div class="input-unit"><input type="text" data-missed inputmode="numeric" placeholder="0"><div class="unit">期</div></div>
+      </div>
+    </div>
+
+    <!-- 本金組成 -->
+    <div class="subhead">本金組成 — 這筆本金實際流向哪（填金額）</div>
+    <div class="fgrid">
+      <div class="field">
+        <label class="label">清掉舊債 1<span class="real">真本金</span></label>
+        <div class="input-unit"><input type="text" data-debt1 inputmode="numeric" placeholder="2,500,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+      <div class="field">
+        <label class="label">清掉舊債 2<span class="real">真本金</span></label>
+        <div class="input-unit"><input type="text" data-debt2 inputmode="numeric" placeholder="900,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+      <div class="field">
+        <label class="label">代辦服務費<span class="infl">客戶↔代辦</span></label>
+        <div class="input-unit"><input type="text" data-agentfee inputmode="numeric" placeholder="1,200,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+      <div class="field">
+        <label class="label">金主開辦費<span class="infl">§205</span></label>
+        <div class="input-unit"><input type="text" data-origin inputmode="numeric" placeholder="600,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+      <div class="field">
+        <label class="label">預扣利息<span class="infl">§323</span></label>
+        <div class="input-unit"><input type="text" data-prepay inputmode="numeric" placeholder="360,000" oninput="fmtNum(this)"><div class="unit">元</div></div>
+      </div>
+    </div>
+
+    <div class="toggle-row" data-agentrow onclick="toggleAgent(this)">
+      <span class="toggle-row-label">代辦與金主為「同一批人」
+        <small>有證據時打開：代辦服務費視為未交付本金，自本金扣除（情境試算）</small>
+      </span>
+      <div class="toggle-sw" data-agentsw></div>
+    </div>
+  </div>
+</template>
+
+<script>
+// ───────── helpers ─────────
+function fmtNum(el){ const v=el.value.replace(/[^0-9]/g,''); el.value = v?parseInt(v,10).toLocaleString('zh-TW'):''; }
+function num(v){ return parseFloat(String(v||'').replace(/[^0-9.]/g,''))||0; }
+function fmt(n){ return Math.round(n).toLocaleString('zh-TW'); }
+function fmtPct(n){ return n.toFixed(2)+'%'; }
+function setMoneyInput(input, value){
+  const n = num(value);
+  if(n > 0) input.value = Math.round(n).toLocaleString('zh-TW');
+}
+function applyLandingPrefill(){
+  const params = new URLSearchParams(window.location.search);
+  if(!params.toString()) return;
+
+  const firstRound = document.querySelector('[data-round]');
+  if(!firstRound) return;
+
+  const debtTotal = params.get('debtTotal');
+  const repaidAmount = params.get('repaidAmount');
+  const monthlyPayment = params.get('monthlyPayment');
+  const rateOrPenalty = params.get('rateOrPenalty');
+
+  setMoneyInput(document.getElementById('settleQuote'), debtTotal);
+  setMoneyInput(firstRound.querySelector('[data-prin]'), debtTotal);
+  setMoneyInput(firstRound.querySelector('[data-monthly]'), monthlyPayment);
+
+  if(num(monthlyPayment) > 0 && num(repaidAmount) > 0){
+    firstRound.querySelector('[data-paid]').value = Math.max(1, Math.round(num(repaidAmount) / num(monthlyPayment)));
+  }
+
+  if(rateOrPenalty){
+    const parts = rateOrPenalty.split(/[／/]/).map((item) => item.trim()).filter(Boolean);
+    const primary = parts[0] || rateOrPenalty;
+    const secondary = parts[1] || '';
+
+    if(num(primary) > 100){
+      setMoneyInput(firstRound.querySelector('[data-penalty]'), primary);
+    } else if(num(primary) > 0) {
+      firstRound.querySelector('[data-rate]').value = num(primary);
+      firstRound.querySelector('[data-ratetype]').value = 'annual';
+    }
+
+    if(secondary){
+      if(num(secondary) > 100){
+        setMoneyInput(firstRound.querySelector('[data-penalty]'), secondary);
+      } else if(num(secondary) > 0) {
+        firstRound.querySelector('[data-rate]').value = num(secondary);
+        firstRound.querySelector('[data-ratetype]').value = 'annual';
+      }
+    }
+  }
+
+  firstRound.querySelector('[data-title]').value = '從官網初步試算帶入';
+}
+
+function fillDates(el){
+  const ysel = el.querySelector('[data-year]'); const now = new Date().getFullYear();
+  for(let y=now; y>=now-5; y--){ const o=document.createElement('option'); o.value=y; o.textContent=`${y}（民${y-1911}）`; ysel.appendChild(o); }
+  const msel = el.querySelector('[data-month]');
+  for(let m=1;m<=12;m++){ const o=document.createElement('option'); o.value=m; o.textContent=m+'月'; msel.appendChild(o); }
+}
+
+// ───────── rounds ─────────
+function addRound(){
+  const el = document.getElementById('round-tpl').content.cloneNode(true).querySelector('[data-round]');
+  document.getElementById('rounds').appendChild(el);
+  fillDates(el); renumber();
+}
+function delRound(btn){
+  if(document.querySelectorAll('[data-round]').length<=1){ alert('至少保留一筆'); return; }
+  btn.closest('[data-round]').remove(); renumber();
+}
+function renumber(){
+  document.querySelectorAll('[data-round]').forEach((el,i)=>{ el.querySelector('[data-tag]').textContent='第 '+(i+1)+' 筆'; });
+}
+function toggleAgent(row){
+  const sw=row.querySelector('[data-agentsw]'); const on=sw.classList.toggle('on'); row.classList.toggle('on',on);
+}
+
+function annualRate(el){
+  const v=num(el.querySelector('[data-rate]').value);
+  return el.querySelector('[data-ratetype]').value==='monthlyfen' ? v*12 : v;
+}
+function elapsed(el){
+  const y=parseInt(el.querySelector('[data-year]').value)||0; const m=parseInt(el.querySelector('[data-month]').value)||1;
+  if(!y) return 0; const now=new Date();
+  return Math.max(0,(now.getFullYear()-y)*12+(now.getMonth()+1-m));
+}
+
+// ───────── AMORTIZATION (§205 × §323) ─────────
+// legalAnnualPct = min(約定, 16); each period legal interest = bal×rate/12; excess of payment → principal
+function amortize(principal, monthly, periods, legalAnnualPct){
+  const mRate = (legalAnnualPct/100)/12;
+  let bal=principal; const rows=[]; let paidOff=false, paidOffAt=0;
+  for(let i=1;i<=periods;i++){
+    const open=bal; const interest=bal*mRate; let tp=monthly-interest;
+    if(tp<=0){ rows.push({p:i,open,interest,principal:0,close:bal}); continue; }
+    if(tp>=bal){ rows.push({p:i,open,interest,principal:bal,close:0}); bal=0; paidOff=true; paidOffAt=i; break; }
+    bal-=tp; rows.push({p:i,open,interest,principal:tp,close:bal});
+  }
+  return { rows, remaining:Math.max(0,bal), paidOff, paidOffAt };
+}
+
+// ───────── collect ─────────
+function collect(el){
+  const prin    = num(el.querySelector('[data-prin]').value);
+  const monthly = num(el.querySelector('[data-monthly]').value);
+  const aRate   = annualRate(el);
+  const penalty = num(el.querySelector('[data-penalty]').value);
+
+  const debt1   = num(el.querySelector('[data-debt1]').value);
+  const debt2   = num(el.querySelector('[data-debt2]').value);
+  const agentFee= num(el.querySelector('[data-agentfee]').value);
+  const origin  = num(el.querySelector('[data-origin]').value);
+  const prepay  = num(el.querySelector('[data-prepay]').value);
+
+  let paid = num(el.querySelector('[data-paid]').value);
+  if(!paid) paid = elapsed(el);
+  paid = Math.round(paid);
+  const missed = Math.round(num(el.querySelector('[data-missed]').value));
+
+  const sameGroup = el.querySelector('[data-agentsw]').classList.contains('on');
+
+  // legal interest cap
+  const legalRate = Math.min(aRate || 16, 16);
+
+  // 合法計息基準：本金剝掉「開辦費(§205)＋預扣利息(§323)」；代辦費預設保留，同一批人才再扣
+  const baseDefault = Math.max(0, prin - origin - prepay);
+  const baseAgent   = Math.max(0, baseDefault - agentFee);
+
+  return {
+    title: el.querySelector('[data-title]').value || el.querySelector('[data-tag]').textContent,
+    prin, monthly, aRate, legalRate, penalty,
+    debt1, debt2, agentFee, origin, prepay,
+    paid, missed, sameGroup, baseDefault, baseAgent
+  };
+}
+
+// ───────── render one round ─────────
+function renderRound(d){
+  const amDefault = amortize(d.baseDefault, d.monthly, d.paid, d.legalRate);
+  const amAgent   = amortize(d.baseAgent,   d.monthly, d.paid, d.legalRate);
+  const remDefault = amDefault.remaining;
+  const remAgent   = amAgent.remaining;
+
+  const legalRem = d.sameGroup ? remAgent : remDefault;          // 採用的法律剩餘本金
+  const arrearsInterest = legalRem * 0.16 * (d.missed/12);        // §207 單利
+  const courtBase = legalRem;
+
+  const penPct = d.prin>0 && d.penalty>0 ? (d.penalty/d.prin*100).toFixed(1) : null;
+
+  let h = `<div class="result-round">`;
+  h += `<div class="result-round-head">${d.title}</div>`;
+  h += `<div class="result-round-sub">本金 ${fmt(d.prin)} 元 ｜ 約定 ${fmtPct(d.aRate)}${d.aRate>16?'（逾16%，合法利息以16%計）':'（未逾16%）'} ｜ 月還 ${fmt(d.monthly)} 元 ｜ 已還 ${d.paid} 期${d.missed?` ｜ 欠繳 ${d.missed} 期`:''}${d.penalty>0?`<br>違約金 ${fmt(d.penalty)} 元${penPct?`（約本金 ${penPct}%）`:''}：§252 得酌減，不計入法律底線`:''}</div>`;
+
+  // 法定應返還數額（顯著）
+  h += `<div class="verdict">
+    <div class="verdict-label">法定應返還數額</div>
+    <div class="verdict-num">${fmt(legalRem)} 元</div>
+    <div class="verdict-sub">本金面額 ${fmt(d.prin)} 元，依 §205×§323 重算後${d.sameGroup && d.agentFee>0 ? '（已扣代辦費）':''}</div>
+  </div>`;
+
+  // ① 本金組成
+  h += `<div class="block-title">① 本金組成與合法計息基準</div>`;
+  h += `<div class="decomp">`;
+  h += `<div class="decomp-row head"><span class="dk">本金（合約面額）</span><span class="dv">${fmt(d.prin)}</span></div>`;
+  const items = [
+    ['清掉舊債 1', d.debt1, 'real', '真本金 · 保留'],
+    ['清掉舊債 2', d.debt2, 'real', '真本金 · 保留'],
+    ['代辦服務費', d.agentFee, 'keep', '預設保留／同一批人扣'],
+    ['金主開辦費', d.origin, 'infl', '§205 · 扣除'],
+    ['預扣利息', d.prepay, 'infl', '§323 · 扣除'],
+  ];
+  items.forEach(r=>{ if(r[1]>0) h += `<div class="decomp-row"><span class="dk">${r[0]}<span class="dtag ${r[2]}">${r[3]}</span></span><span class="dv">${fmt(r[1])}</span></div>`; });
+  if(d.origin>0) h += `<div class="decomp-row"><span class="dk">減：金主開辦費（§205 變相利息）</span><span class="dv minus">－${fmt(d.origin)}</span></div>`;
+  if(d.prepay>0) h += `<div class="decomp-row"><span class="dk">減：預扣利息（§323 未交付）</span><span class="dv minus">－${fmt(d.prepay)}</span></div>`;
+  h += `<div class="decomp-row base"><span class="dk">合法計息基準（預設）</span><span class="dv">${fmt(d.baseDefault)} 元</span></div>`;
+  h += `</div>`;
+  h += `<div class="note">開辦費屬變相利息（§205 逾16%無效）、預扣利息客戶未實際取得（§323），均自本金剝除；代辦費為客戶與代辦間關係，原則保留於本金，惟有「同一批人」證據時可主張扣除（見④）。</div>`;
+
+  // ② 逐期
+  h += `<div class="block-title">② 逐期超額抵充本金（§205×§323，還幾期列幾期）</div>`;
+  if(d.baseDefault<=0){
+    h += `<div class="info-box">請先填本金。</div>`;
+  } else if(d.monthly<=0 || d.paid<=0){
+    h += `<div class="info-box">請填月還款額與已還期數（或借款日期）。</div>`;
+  } else {
+    if(amDefault.paidOff) h += `<div class="info-box"><b>✅ 依此算法，合法本金已於第 ${amDefault.paidOffAt} 期清償完畢。</b>委任人已無剩餘本金義務。</div>`;
+    h += `<div class="amort-schedule"><table class="amort-table"><thead><tr>
+      <th>期</th><th>期初本金</th><th>合法利息<br><span style="font-weight:400;font-size:10px;">本金×${d.legalRate}%÷12</span></th><th>抵充本金<br><span style="font-weight:400;font-size:10px;">月還款－利息</span></th><th>期末本金</th>
+    </tr></thead><tbody>`;
+    let ti=0,tp=0;
+    amDefault.rows.forEach(r=>{ ti+=r.interest; tp+=r.principal;
+      h += `<tr><td>${r.p}</td><td>${fmt(r.open)}</td><td>${fmt(r.interest)}</td><td class="principal">＋${fmt(r.principal)}</td><td class="balance">${fmt(r.close)}</td></tr>`;
+    });
+    h += `<tr class="total"><td>合計</td><td>—</td><td>${fmt(ti)}</td><td class="principal">＋${fmt(tp)}</td><td class="balance">${fmt(remDefault)}</td></tr>`;
+    h += `</tbody></table></div>`;
+    h += `<div class="note">每期還款先抵合法利息，超出部分全數抵本金；本金逐期遞減、抵本金金額逐期遞增。</div>`;
+  }
+
+  // ③ 核心對比
+  h += `<div class="block-title">③ 核心對比：打完官司可能的數字 vs 本金面額</div>`;
+  h += `<div class="compare">
+    <div class="cbox cbox-claim"><div class="clabel">本金面額</div><div class="cnum">${fmt(d.prin)}</div><div class="csub">合約面額，未依法重算</div></div>
+    <div class="cbox cbox-legal"><div class="clabel">法律上剩餘本金</div><div class="cnum">${fmt(remDefault)}</div><div class="csub">§205×§323 逐期重算後</div></div>
+  </div>`;
+  const gap = d.prin - remDefault;
+  const gapPct = d.prin>0 ? (gap/d.prin*100).toFixed(1) : 0;
+  h += `<div class="gap-bar">相較本金面額，法律上可主張少還 <b>${fmt(gap)} 元（${gapPct}%）</b>。</div>`;
+
+  // ④ 代辦情境
+  if(d.agentFee>0){
+    h += `<div class="block-title">④ 情境試算：把代辦扯進來（同一批人）</div>`;
+    h += `<div class="scn-grid">
+      <div class="scn-box scn-base"><div class="slabel">代辦與金主各自獨立</div><div class="snum">${fmt(remDefault)} 元</div><div class="ssub">代辦費保留於本金（預設）</div></div>
+      <div class="scn-box scn-agent"><div class="slabel">證明同一批人 → 扣代辦費</div><div class="snum">${fmt(remAgent)} 元</div><div class="ssub">代辦費 ${fmt(d.agentFee)} 元視為未交付本金</div></div>
+    </div>`;
+    h += `<div class="gap-bar">若能證明金主與代辦為同一批人，剩餘本金再降 <b>${fmt(remDefault-remAgent)} 元</b>。</div>`;
+    if(d.sameGroup) h += `<div class="note">已勾選「同一批人」，下方欠繳與進法院基礎採「扣代辦費」後數字。</div>`;
+  }
+
+  // ⑤ 欠繳
+  if(d.missed>0){
+    h += `<div class="block-title">⑤ 欠繳累積（停繳 ${d.missed} 期）</div>`;
+    h += `<div class="arrears-box">
+      <div class="ab-line"><span>計息基礎（停繳時剩餘本金）</span><span>${fmt(legalRem)} 元</span></div>
+      <div class="ab-line"><span>年利率（§205 上限）</span><span>16%</span></div>
+      <div class="ab-line"><span>停繳期間</span><span>${d.missed} 期 ≈ ${(d.missed/12).toFixed(2)} 年</span></div>
+      <div class="ab-line"><span>累積利息（單利，§207 不滾利）</span><span>${fmt(arrearsInterest)} 元</span></div>
+      <div class="ab-line total"><span>停繳後累積應付（本金＋利息）</span><span>${fmt(legalRem+arrearsInterest)} 元</span></div>
+    </div>`;
+    h += `<div class="info-box">⚠️ 提醒客戶：即使認為不合理而停繳，剩餘本金 <b>${fmt(legalRem)} 元</b> 仍是法律上站得住的債務，停繳期間另按 16% <b>單利</b>累積利息（不滾入本金再生利息）。停繳不等於免除，進法院仍可能要償還。</div>`;
+  }
+
+  // ⑥ 進法院基礎
+  h += `<div class="block-title">⑥ 進法院後 16% 計息基礎（至清償日止）</div>`;
+  h += `<div class="court-base">
+    <div class="cb-label">法院判准後，按 16% 年利率（單利）計算至清償日止的「基礎」</div>
+    <div class="cb-num">${fmt(courtBase)} 元</div>
+    <div class="cb-formula">＝ 法律上剩餘本金${d.sameGroup && d.agentFee>0 ? '（已扣代辦費）':''}　｜　每年利息約 ${fmt(courtBase*0.16)} 元（單利，不滾利）</div>
+  </div>`;
+  h += `<div class="note">此基礎即前述 §205×§323 重算後之剩餘本金。對方若以本金面額（${fmt(d.prin)} 元）與約定利率（${fmtPct(d.aRate)}）請求，差距即主要爭點。</div>`;
+
+  h += `</div>`;
+  return { html:h, d, amDefault, prin:d.prin, remDefault, remAgent, legalRem,
+           arrearsInterest, courtBase, missed:d.missed, sameGroup:d.sameGroup, agentFee:d.agentFee, title:d.title };
+}
+
+// ───────── calc all ─────────
+function calcAll(){
+  const els = document.querySelectorAll('[data-round]');
+  if(!els.length){ alert('請至少新增一筆借款'); return; }
+  const caseName = document.getElementById('caseName').value;
+  const settleQuote = num(document.getElementById('settleQuote').value);
+
+  let body=''; const rs=[];
+  els.forEach(el=>{ const r=renderRound(collect(el)); body+=r.html; rs.push(r); });
+  window.lastResults = { caseName, settleQuote, rounds: rs };
+
+  if(els.length>1 || settleQuote>0){
+    const totalPrin  = rs.reduce((s,r)=>s+r.prin,0);
+    const totalLegal = rs.reduce((s,r)=>s+r.legalRem,0);
+    let sum = `<div class="result-round" style="border-top-color:#1a1a2e;">`;
+    sum += `<div class="result-round-head" style="color:#1a1a2e;">總覽與合理性對比${caseName?` — ${caseName}`:''}</div>`;
+    if(els.length>1){
+      sum += `<table class="summary-table"><thead><tr><th>借款</th><th>本金面額</th><th>法律剩餘本金</th><th>可主張少還</th></tr></thead><tbody>`;
+      rs.forEach(r=>{ sum += `<tr><td>${r.title}</td><td>${fmt(r.prin)}</td><td>${fmt(r.legalRem)}</td><td>${fmt(r.prin-r.legalRem)}</td></tr>`; });
+      sum += `<tr class="grand"><td>合計</td><td>${fmt(totalPrin)}</td><td class="legal">${fmt(totalLegal)}</td><td>${fmt(totalPrin-totalLegal)}</td></tr>`;
+      sum += `</tbody></table>`;
+    }
+    if(settleQuote>0){
+      const vs = settleQuote - totalLegal;
+      const vsPct = settleQuote>0 ? (vs/settleQuote*100).toFixed(1) : 0;
+      sum += `<div class="block-title" style="margin-top:18px;">金主要求清償 vs 法律底線</div>`;
+      sum += `<div class="compare">
+        <div class="cbox cbox-claim"><div class="clabel">金主要求清償</div><div class="cnum">${fmt(settleQuote)}</div><div class="csub">金主亂喊的結清價</div></div>
+        <div class="cbox cbox-legal"><div class="clabel">法律剩餘本金${els.length>1?'合計':''}</div><div class="cnum">${fmt(totalLegal)}</div><div class="csub">談判底線</div></div>
+      </div>`;
+      sum += `<div class="gap-bar">金主要求高於法律底線 <b>${fmt(vs)} 元（${vsPct}%）</b>，此即不合理／談判空間；理想結清應往 ${fmt(totalLegal)} 元方向施壓。</div>`;
+    }
+    sum += `</div>`;
+    body += sum;
+  }
+
+  document.getElementById('results-body').innerHTML = body;
+  document.getElementById('input-area').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function backToInput(){
+  document.getElementById('results').style.display='none';
+  document.getElementById('input-area').style.display='block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ═══════════════ WORD (.docx) EXPORT — 純 JS，無外部依賴 ═══════════════
+const _CRC=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})();
+function _crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=_CRC[(c^u8[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;}
+function _s(s){return new TextEncoder().encode(s);}
+function _cat(a){let n=0;for(const x of a)n+=x.length;const o=new Uint8Array(n);let p=0;for(const x of a){o.set(x,p);p+=x.length;}return o;}
+function _u16(n){return new Uint8Array([n&255,(n>>8)&255]);}
+function _u32(n){return new Uint8Array([n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255]);}
+function _zip(files){
+  const parts=[],central=[];let off=0;
+  for(const f of files){const name=_s(f.name),data=f.data,crc=_crc32(data);
+    const lh=_cat([_u32(0x04034b50),_u16(20),_u16(0x0800),_u16(0),_u16(0),_u16(0),_u32(crc),_u32(data.length),_u32(data.length),_u16(name.length),_u16(0)]);
+    parts.push(lh,name,data);central.push({name,crc,size:data.length,off});off+=lh.length+name.length+data.length;}
+  const cd=[];let cs=0;
+  for(const c of central){const h=_cat([_u32(0x02014b50),_u16(20),_u16(20),_u16(0x0800),_u16(0),_u16(0),_u16(0),_u32(c.crc),_u32(c.size),_u32(c.size),_u16(c.name.length),_u16(0),_u16(0),_u16(0),_u16(0),_u32(0),_u32(c.off)]);cd.push(h,c.name);cs+=h.length+c.name.length;}
+  const end=_cat([_u32(0x06054b50),_u16(0),_u16(0),_u16(central.length),_u16(central.length),_u32(cs),_u32(off),_u16(0)]);
+  return _cat([...parts,...cd,end]);
+}
+function _esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const _FONT='Microsoft JhengHei';
+function _rpr(o={}){return `<w:rPr>${o.bold?'<w:b/>':''}<w:sz w:val="${o.size||22}"/><w:szCs w:val="${o.size||22}"/>${o.color?`<w:color w:val="${o.color}"/>`:''}<w:rFonts w:ascii="${_FONT}" w:hAnsi="${_FONT}" w:eastAsia="${_FONT}"/></w:rPr>`;}
+function _p(text,o={}){const a=o.align?`<w:jc w:val="${o.align}"/>`:'';return `<w:p><w:pPr><w:spacing w:after="${o.after!=null?o.after:120}" w:line="276" w:lineRule="auto"/>${a}</w:pPr><w:r>${_rpr(o)}<w:t xml:space="preserve">${_esc(text)}</w:t></w:r></w:p>`;}
+function _h(text,o={}){return _p(text,Object.assign({bold:true,size:26,color:'7C2D12',after:80},o));}
+function _pb(){return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';}
+function _cell(o){const a=o.align||'left';const fill=o.fill?`<w:shd w:val="clear" w:color="auto" w:fill="${o.fill}"/>`:'';return `<w:tc><w:tcPr>${fill}<w:vAlign w:val="center"/></w:tcPr><w:p><w:pPr><w:spacing w:after="20"/><w:jc w:val="${a}"/></w:pPr><w:r>${_rpr({bold:o.bold,size:o.size||20,color:o.color})}<w:t xml:space="preserve">${_esc(o.t)}</w:t></w:r></w:p></w:tc>`;}
+function _tbl(rows){
+  const b='<w:tblBorders><w:top w:val="single" w:sz="4" w:space="0" w:color="D0D0D0"/><w:left w:val="single" w:sz="4" w:space="0" w:color="D0D0D0"/><w:bottom w:val="single" w:sz="4" w:space="0" w:color="D0D0D0"/><w:right w:val="single" w:sz="4" w:space="0" w:color="D0D0D0"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="D0D0D0"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="D0D0D0"/></w:tblBorders>';
+  let x=`<w:tbl><w:tblPr><w:tblW w:w="0" w:type="auto"/>${b}<w:tblLook w:val="04A0"/></w:tblPr>`;
+  for(const r of rows) x+='<w:tr>'+r.map(_cell).join('')+'</w:tr>';
+  return x+'</w:tbl>'+_p('',{after:60});
+}
+function exportWord(){
+  const R=window.lastResults;
+  if(!R||!R.rounds.length){alert('請先產出分析結果');return;}
+  const multi=R.rounds.length>1;
+  const today=new Date().toISOString().slice(0,10);
+  let body='';
+  body+=_h('不動產二胎重整 — 案件分析備忘',{size:32,align:'center',after:60});
+  body+=_p(`客戶／案號：${R.caseName||'—'}　｜　日期：${today}`,{size:18,color:'808080',after:160});
+  if(R.settleQuote>0) body+=_p(`金主要求清償數額：${fmt(R.settleQuote)} 元`,{size:20,bold:true,color:'B45309',after:160});
+
+  let totalLegal=0;
+  R.rounds.forEach((r,idx)=>{
+    const d=r.d; totalLegal+=r.legalRem;
+    if(multi) body+=_h(`借款 ${idx+1}：${r.title}`,{size:24});
+    // 借款條件
+    const cond=[
+      [{t:'本金面額',bold:true,fill:'F3F4F6'},{t:fmt(d.prin)+' 元'}],
+      [{t:'約定利率',bold:true,fill:'F3F4F6'},{t:`年息 ${d.aRate}%（合法利息以 ${d.legalRate}% 計）`}],
+      [{t:'月還款額',bold:true,fill:'F3F4F6'},{t:fmt(d.monthly)+' 元/月'}],
+    ];
+    if(d.penalty>0) cond.push([{t:'違約金',bold:true,fill:'F3F4F6'},{t:fmt(d.penalty)+' 元（§252 可酌減，不計入底線）'}]);
+    cond.push([{t:'已還／欠繳',bold:true,fill:'F3F4F6'},{t:`已還 ${d.paid} 期${d.missed?` ／ 欠繳 ${d.missed} 期`:''}`}]);
+    body+=_h('一、借款條件',{size:22});
+    body+=_tbl(cond);
+    // 本金組成
+    const comp=[[{t:'本金流向',bold:true,fill:'F3F4F6'},{t:'金額',bold:true,fill:'F3F4F6',align:'right'}]];
+    const ci=[['清掉舊債 1',d.debt1],['清掉舊債 2',d.debt2],['代辦服務費',d.agentFee],['金主開辦費（§205）',d.origin],['預扣利息（§323）',d.prepay]];
+    ci.forEach(x=>{if(x[1]>0)comp.push([{t:x[0]},{t:fmt(x[1])+' 元',align:'right'}]);});
+    comp.push([{t:'合法計息基準（本金−開辦−預扣）',bold:true,fill:'F0FDF4',color:'047857'},{t:fmt(d.baseDefault)+' 元',bold:true,fill:'F0FDF4',color:'047857',align:'right'}]);
+    body+=_h('二、本金組成與合法計息基準',{size:22});
+    body+=_tbl(comp);
+    // 法定應返還數額
+    body+=_h('三、法定應返還數額',{size:22});
+    body+=_p(fmt(r.legalRem)+' 元',{bold:true,size:40,color:'DC2626',align:'center',after:40});
+    body+=_p(`本金面額 ${fmt(d.prin)} 元，依 §205×§323 逐期重算後${d.sameGroup&&d.agentFee>0?'（已扣代辦費）':''}；相較面額可主張少還 ${fmt(d.prin-r.remDefault)} 元`,{size:18,color:'808080',align:'center',after:160});
+    if(d.agentFee>0) body+=_p(`◆ 情境：若證明金主與代辦同一批人，扣代辦費後剩餘本金 ${fmt(r.remAgent)} 元（再降 ${fmt(r.remDefault-r.remAgent)} 元）。`,{size:19,after:100});
+    if(d.missed>0) body+=_p(`◆ 欠繳 ${d.missed} 期：以 ${fmt(r.legalRem)} 元按 16% 單利（§207 不滾利）累積利息 ${fmt(r.arrearsInterest)} 元，停繳後累積應付 ${fmt(r.legalRem+r.arrearsInterest)} 元。`,{size:19,after:100});
+    body+=_p(`◆ 進法院計息基礎：${fmt(r.courtBase)} 元，判准後按 16% 單利計至清償日止（每年約 ${fmt(r.courtBase*0.16)} 元）。`,{size:19,after:160});
+  });
+  // 合理性對比
+  if(R.settleQuote>0){
+    body+=_h(multi?'總覽：合理性對比':'四、合理性對比與談判建議',{size:22});
+    body+=_p(`金主要求清償 ${fmt(R.settleQuote)} 元，法律底線${multi?'合計':''} ${fmt(totalLegal)} 元，高於底線 ${fmt(R.settleQuote-totalLegal)} 元，即不合理／談判空間。理想結清應往 ${fmt(totalLegal)} 元方向施壓。`,{size:20,after:160});
+  }
+  // 法律依據
+  body+=_h('法律依據',{size:20});
+  body+=_p('§205 利率逾16%超過部分無效（含服務費／開辦費等變相利息）｜ §323 清償抵充：費用→利息→本金，預扣利息視為本金先償 ｜ §252 違約金過高得酌減 ｜ §207 利息不得滾入原本再生利息。參照新北地院114年度訴字第107號。',{size:17,color:'808080',after:80});
+  body+=_p('本備忘為內部談判與訴訟評估參考，非對外保證之金額；個案仍依證據與法院認定為準。',{size:16,color:'AAAAAA'});
+
+  // ── PAGE 2: 逐期表 ──
+  body+=_pb();
+  R.rounds.forEach((r,idx)=>{
+    body+=_h(`逐期還款明細${multi?'：'+r.title:''}`,{size:24});
+    if(!r.amDefault || !r.amDefault.rows.length){ body+=_p('（未填月還款額或已還期數，無逐期資料）',{size:18,color:'808080'}); return; }
+    const head=[{t:'期',bold:true,fill:'FEE2E2',align:'center'},{t:'期初本金',bold:true,fill:'FEE2E2',align:'right'},{t:`合法利息（${r.d.legalRate}%）`,bold:true,fill:'FEE2E2',align:'right'},{t:'抵充本金',bold:true,fill:'FEE2E2',align:'right'},{t:'期末本金',bold:true,fill:'FEE2E2',align:'right'}];
+    const rows=[head]; let ti=0,tp=0;
+    r.amDefault.rows.forEach(x=>{ti+=x.interest;tp+=x.principal;
+      rows.push([{t:String(x.p),align:'center'},{t:fmt(x.open),align:'right'},{t:fmt(x.interest),align:'right'},{t:'＋'+fmt(x.principal),align:'right',color:'059669'},{t:fmt(x.close),align:'right'}]);});
+    rows.push([{t:'合計',bold:true,fill:'FEE2E2',align:'center'},{t:'—',fill:'FEE2E2',align:'right'},{t:fmt(ti),bold:true,fill:'FEE2E2',align:'right'},{t:'＋'+fmt(tp),bold:true,fill:'FEE2E2',align:'right',color:'059669'},{t:fmt(r.remDefault),bold:true,fill:'FEE2E2',align:'right',color:'DC2626'}]);
+    body+=_tbl(rows);
+    body+=_p('每期還款先抵合法利息，超出部分全數抵本金；本金逐期遞減、抵本金逐期遞增。',{size:16,color:'808080'});
+  });
+
+  const docXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="709" w:footer="709" w:gutter="0"/></w:sectPr></w:body></w:document>`;
+  const CT='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+  const RELS='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  const zip=_zip([{name:'[Content_Types].xml',data:_s(CT)},{name:'_rels/.rels',data:_s(RELS)},{name:'word/document.xml',data:_s(docXml)}]);
+  const blob=new Blob([zip],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  const safe=(R.caseName||today).replace(/[\\/:*?"<>|]/g,'_');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`案件分析_${safe}.docx`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+addRound();
+applyLandingPrefill();
+</script>
+</body>
+</html>
