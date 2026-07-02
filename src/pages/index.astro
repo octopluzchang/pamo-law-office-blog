@@ -8,11 +8,6 @@ const allArticles = (await getCollection('articles'))
   .sort((a, b) => +new Date(b.data.date) - +new Date(a.data.date))
   .slice(0, 3);
 
-const featuredCases = (await getCollection('cases'))
-  .filter((item) => !item.data.draft)
-  .sort((a, b) => +b.data.date - +a.data.date)
-  .slice(0, 3);
-
 const services = [
   { title: '車禍和解', img: '/assets/service_1.png' },
   { title: '車禍鑑定/賠償分析', img: '/assets/service_2.png' },
@@ -31,29 +26,50 @@ const products = [
   { title: '合約即時印', img: '/assets/products_1.png', url: 'https://fastprint.pamolaw.com/' },
   { title: 'PAMO車禍線上律師', img: '/assets/products_2.png', url: 'https://www.pamolaw.com/' },
   { title: '旅行法保', img: '/assets/products_3.png', url: 'https://www.pamolaw.com/travelpro/' },
-  { title: '車險健檢', img: '/assets/products_4.png', url: 'https://www.pamolaw.com/quiz-take/' }
+  { title: '30秒車險健檢', img: '/assets/products_4.png', url: 'https://www.pamolaw.com/quiz-take/' }
 ];
+
+const caseHighlights = [
+  {
+    label: '車禍成功求償',
+    amount: '170',
+    unit: '萬',
+    caption: '協助整理醫療費、工作損失與後續照護費用',
+    href: '/cases/'
+  },
+  {
+    label: '車禍少賠',
+    amount: '56',
+    unit: '萬',
+    caption: '重新檢視責任比例與請求項目',
+    href: '/cases/'
+  },
+  {
+    label: '成功取得資遣費',
+    amount: '18',
+    unit: '萬',
+    caption: '釐清勞保給付條件，協助追回款項',
+    href: '/cases/case-03/'
+  }
+];
+
 ---
 
 <BaseLayout>
-  <main class="bg-white text-black">
-    <section class="relative overflow-hidden bg-black text-white">
-      <div class="pointer-events-none absolute inset-0">
-        <img src="/assets/hero_bg.svg" alt="" class="w-full h-full object-cover" />
-      </div>
+  <main class="home-page bg-white text-black">
+    <section class="hero-section relative overflow-hidden bg-[#0d0d0d] text-white">
+      <img src="/assets/hero_cover.png" alt="" class="absolute inset-0 h-full w-full object-cover" />
+      <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,.62),rgba(0,0,0,.24)_45%,rgba(0,0,0,.6)),linear-gradient(180deg,rgba(0,0,0,.52),rgba(0,0,0,.14)_42%,rgba(0,0,0,.68))]"></div>
 
-      <div class="relative mx-auto max-w-6xl px-6">
-        <div class="flex min-h-105 flex-col items-center justify-center py-16 my-16 text-center md:min-h-130 md:py-24">
-          <h1 class="max-w-3xl text-4xl leading-tight md:text-6xl">
-            車禍、不動產、遺產糾紛
-            <div class="my-2"></div>
-            一步錯，步步錯
+      <div class="relative mx-auto flex min-h-[620px] max-w-6xl items-center justify-center px-6 pt-24 pb-16 md:min-h-[760px]">
+        <div class="max-w-2xl text-center">
+          <p class="text-sm font-black tracking-[0.32em] text-[#d0a07d] md:text-base">車禍賠償｜不動產｜遺產繼承</p>
+          <h1 class="mt-8 text-[40px] leading-tight text-white md:text-[64px]">
+            能談成<br />就別打官司
           </h1>
-
-          <p class="mt-6 max-w-xl text-base leading-8 text-white/85 md:text-xl">
-            律師直接幫你判斷
-            <br />
-            該不該提告、怎麼拿最多賠償
+          <p class="mx-auto mt-6 max-w-xl text-base font-bold leading-8 text-white/90 md:text-xl">
+            我們擅長車禍、不動產、繼承與債權債務爭議的協商談判，
+            幫你用更快、更有效率的方式解決法律問題。
           </p>
           <a
             href="https://lin.ee/wVaKLny"
@@ -64,53 +80,149 @@ const products = [
               location: 'home_hero',
               destination: 'line'
             })"
-            class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
+            class="mt-8 inline-flex min-h-14 items-center rounded-full bg-[#d3a07c] px-8 text-base font-black text-black shadow-[0_14px_32px_rgba(0,0,0,.32)] transition hover:bg-[#e3b38f] md:px-10 md:text-lg"
           >
-            聯絡我們
+            馬上評估能否協商
           </a>
         </div>
       </div>
     </section>
 
-    <section id="services" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
-      <h2 class="text-center text-3xl md:text-5xl">服務項目</h2>
+    <section class="mx-auto max-w-6xl px-6 py-16 text-center md:py-20">
+      <h2 class="text-3xl md:text-5xl">同一個問題<br />兩種解決路徑</h2>
+      <p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
+        不是每個法律問題，都需要走完整訴訟流程。<br class="hidden md:block" />
+        有些案件，真正的關鍵不是判決，而是把金額、條件與責任談清楚。
+      </p>
+
+      <div class="mx-auto mt-10 max-w-5xl">
+        <img src="/assets/paths-mobile-generated.png" alt="同一個問題可以透過訴訟流程或協商路徑解決" class="mx-auto block w-full max-w-[430px] object-contain md:hidden" />
+        <img src="/assets/paths.png" alt="同一個問題可以透過訴訟流程或協商路徑解決" class="mx-auto hidden w-full object-contain md:block" />
+      </div>
+    </section>
+
+    <section id="services" class="mx-auto max-w-6xl px-6 py-14 text-center md:py-18">
+      <h2 class="text-3xl md:text-5xl">我們專精的領域</h2>
+      <p class="mx-auto mt-5 max-w-xl text-sm leading-7 text-neutral-500 md:text-base">
+        這些本質上都是「數字與條件的談判」，
+        我們天天都在進三種案件裡談判，把客戶最好的籌碼，是走出來。
+      </p>
 
       <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-y-10 md:grid-cols-4">
         {services.map((service) => (
-          <div class="group flex flex-col items-center text-center">
-            <div class="flex h-full w-full items-center justify-center">
-              <img src={service.img} alt={service.title} class="md:h-[180px] md:w-[180px] w-[120px] h-30 object-contain" />
-            </div>
-
-            <div class="mt-4 font-black leading-6 md:text-base">
-              {service.title}
-            </div>
+          <div class="flex flex-col items-center text-center">
+            <img src={service.img} alt={service.title} class="h-[112px] w-[112px] object-contain md:h-[150px] md:w-[150px]" />
+            <div class="mt-4 text-sm font-black leading-6 md:text-base">{service.title}</div>
           </div>
         ))}
       </div>
     </section>
 
-    <section id="articles" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
-      <h2 class="text-center text-3xl md:text-5xl">熱門法律問題</h2>
+    <section class="mx-auto max-w-5xl px-6 py-16 text-center md:py-22">
+      <h2 class="text-4xl leading-tight md:text-5xl">
+        遇到債務問題？<br />先算出可談的還款條件
+      </h2>
+      <p class="mx-auto mt-5 max-w-2xl text-sm leading-7 text-neutral-500 md:text-base">
+        先估算每月可負擔金額，再讓律師<br class="hidden sm:block" />
+        協助你談出可執行的還款條件。
+      </p>
 
+      <form method="get" action="/calculator-internal-v2/" class="mx-auto mt-8 max-w-2xl space-y-6">
+        <label class="block text-base font-black">
+          欠款總額
+          <input name="debtTotal" type="text" inputmode="numeric" class="mt-3 h-12 w-full border border-neutral-400 px-4 text-center text-base outline-none transition focus:border-[#1687ff] focus:ring-2 focus:ring-[#1687ff]" />
+        </label>
+        <label class="block text-base font-black">
+          已還金額
+          <input name="repaidAmount" type="text" inputmode="numeric" class="mt-3 h-12 w-full border border-neutral-400 px-4 text-center text-base outline-none transition focus:border-[#1687ff] focus:ring-2 focus:ring-[#1687ff]" />
+        </label>
+        <button class="mt-2 h-16 w-full bg-[#d3a07c] text-xl font-black text-black transition hover:bg-[#e3b38f]">
+          繼續估算
+        </button>
+      </form>
+    </section>
+
+    <section id="cases" class="mx-auto max-w-6xl px-6 py-14 text-center md:py-18">
+      <h2 class="text-3xl md:text-5xl">成功案例</h2>
+      <div class="mx-auto mt-10 grid max-w-5xl gap-8 md:grid-cols-3">
+        {caseHighlights.map((item) => (
+          <div>
+            <div class="text-base font-black">{item.label}</div>
+            <div class="mt-3 font-serif text-[72px] font-black leading-none md:text-[92px]">
+              {item.amount}<span class="ml-1 text-4xl md:text-5xl">{item.unit}</span>
+            </div>
+            <p class="mx-auto mt-4 max-w-[220px] text-sm font-black leading-7">{item.caption}</p>
+            <a href={item.href} class="mt-4 inline-block text-base font-black text-[#d3a07c]">前往案例</a>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="bg-[#111] text-white">
+      <div class="mx-auto max-w-4xl px-6 py-18 text-center md:py-24">
+        <h2 class="text-3xl leading-tight text-white md:text-5xl">
+          好律師不是把你帶進法院，<br />而是知道什麼時候不用進法院。
+        </h2>
+        <p class="mx-auto mt-6 max-w-xl text-sm font-bold leading-8 text-white/80 md:text-base">
+          我們擅長協商與條件談判，<br />
+          幫你用更有效率的方式處理法律爭議。
+        </p>
+        <a
+          href="https://lin.ee/wVaKLny"
+          target="_blank"
+          rel="noopener noreferrer"
+          onclick="window.gtag && window.gtag('event', 'cta_click', {
+            cta_name: 'middle_line_consult',
+            location: 'home_middle_cta',
+            destination: 'line'
+          })"
+          class="mt-8 inline-flex min-h-13 items-center rounded-full bg-[#d3a07c] px-8 text-base font-black text-black transition hover:bg-[#e3b38f]"
+        >
+          馬上評估能否協商
+        </a>
+      </div>
+    </section>
+
+    <section class="mx-auto max-w-6xl px-6 py-16 md:py-22">
+      <h2 class="text-center text-3xl md:text-5xl">團隊介紹</h2>
+      <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-x-8 gap-y-12 md:grid-cols-4">
+        {team.map((member) => (
+          <div class="text-center">
+            <div class="mx-auto aspect-[3/4] max-w-[190px] overflow-hidden">
+              <img src={member.img} alt={member.name} class="h-full w-full object-cover object-top" />
+            </div>
+            <h3 class="mt-4 text-2xl md:text-3xl">
+              {member.name}
+              <span class="block text-xs font-sans font-bold">律師</span>
+            </h3>
+            <div class="mx-auto mt-3 h-px w-12 bg-black/25"></div>
+            <div class="mt-3 text-sm font-black leading-6">{member.title}</div>
+            <div class="text-sm leading-6 text-neutral-500">{member.exp}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="articles" class="mx-auto max-w-6xl px-6 py-14 md:py-18">
+      <h2 class="text-center text-3xl md:text-5xl">熱門法律問題</h2>
       <form
         method="get"
         action="/articles/"
         onsubmit="const keyword = this.q.value.trim(); if (window.gtag && keyword) { window.gtag('event', 'search', { search_term: keyword, location: 'home_articles_search' }); }"
-        class="mx-auto mt-10 flex max-w-xl overflow-hidden border border-[#d6aa8c] bg-white"
+        class="mx-auto mt-8 flex max-w-xl border border-[#d6aa8c] bg-white"
       >
         <input
           type="search"
           name="q"
           placeholder="輸入關鍵字"
-          class="w-full bg-transparent px-6 py-3 text-sm outline-none placeholder:text-neutral-400"
+          class="h-11 w-full bg-transparent px-5 text-sm outline-none placeholder:text-neutral-400"
         />
-        <button class="bg-[#c69c7b] px-6 py-3 text-sm font-bold text-black transition hover:opacity-90 whitespace-nowrap">
+        <button class="w-28 bg-[#d3a07c] text-sm font-black text-black transition hover:bg-[#e3b38f]">
           搜尋
         </button>
       </form>
 
-      <div class="mx-auto mt-12 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+      <div class="mx-auto mt-10 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
         {allArticles.map((article) => (
           <ArticleCard
             title={article.data.title}
@@ -124,119 +236,41 @@ const products = [
           />
         ))}
       </div>
-
-      <div class="mt-10 text-center">
-        <a href="/articles/" class="inline-block text-[#c69c7b] font-black hover:opacity-80">
-          看更多法律文章 →
-        </a>
-      </div>
     </section>
 
-    <section id="cases" class="mx-auto max-w-6xl px-6 py-20 md:py-24">
-  <h2 class="text-center text-3xl md:text-5xl">成功案例</h2>
-
-  <div class="mx-auto mt-12 grid max-w-5xl gap-10 md:grid-cols-3">
-    {featuredCases.map((item) => (
-      <div
-        class="group block text-center"
-      >
-        <h3 class="text-2xl font-black leading-tight md:text-3xl">
-          {item.data.title}
-        </h3>
-
-        <p class="mt-3 text-sm leading-6 text-neutral-600 md:text-base">
-          {item.data.description}
-        </p>
-
-        <div class="mt-5 font-black text-7xl leading-none md:text-[88px]">
-          {item.data.amount}
-          <span class="ml-1 text-4xl md:text-5xl">{item.data.unit}</span>
-        </div>
-
-        <a 
-          href={`/cases/${item.id}/`}
-          onclick={`window.gtag && window.gtag('event', 'case_click', {
-            case_id: '${item.id}',
-            location: 'home_cases'
-          })`}
-          class="mt-4 inline-block text-lg font-black text-[#c69c7b] transition group-hover:opacity-80 md:text-xl">
-          看完整案例 →
-        </a>
-      </div>
-    ))}
-  </div>
-</section>
-
-    <section class="bg-black text-white">
-      <div class="mx-auto max-w-4xl px-6 py-20 text-center md:py-24">
-        <h2 class="text-3xl font-bold leading-tight md:text-5xl">
-          別等到事情惡化後，才後悔沒找律師
-        </h2>
-
-        <p class="mt-6 text-base leading-8 text-white/85 md:text-xl">
-          多數人都是在事情惡化後才找律師
-          <br />
-          但那時候
-          <br />
-          很多選擇已經來不及了
-        </p>
-
-        <a
-            href="https://lin.ee/wVaKLny"
-            target="_blank"
-            rel="noopener noreferrer"
-            onclick="window.gtag && window.gtag('event', 'cta_click', {
-              cta_name: 'bottom_line_consult',
-              location: 'home_bottom_cta',
-              destination: 'line'
-            })"
-            class="mt-8 inline-flex items-center rounded-full px-7 py-3 text-sm font-black text-[#c69c7b] border border-[#c69c7b] transition md:px-8 md:py-4 md:text-base"
-          >
-            聯絡我們
-          </a>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-6 py-20 md:py-24">
-      <h2 class="text-center text-3xl md:text-5xl">團隊介紹</h2>
-
-      <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 md:grid-cols-4">
-        {team.map((member) => (
-          <div class="group text-center">
-            <div class="aspect-3/4 overflow-hidden bg-[#d8d8d8]">
-              <img src={member.img} alt={member.name} class="h-full w-full object-cover" />
-            </div>
-
-            <h3 class="py-4 font-black text-2xl md:text-3xl">
-              {member.name}
-              <div class="text-sm font-sans font-bold">律師</div>
-            </h3>
-
-            <hr class="border-black/20" />
-
-            <div class="mt-2 text-sm font-semibold leading-6 md:text-base">{member.title}</div>
-            <div class="mt-1 text-sm leading-6 md:text-base text-neutral-600">{member.exp}</div>
-          </div>
-        ))}
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-6 py-20 md:py-24">
-      <h2 class="text-center text-3xl md:text-5xl">略策旗下產品</h2>
-
+    <section class="mx-auto max-w-6xl px-6 py-16 text-center md:py-22">
+      <h2 class="text-3xl md:text-5xl">略策旗下其他產品</h2>
       <div class="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-8 md:grid-cols-4">
         {products.map((product) => (
           <a
             href={product.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="group text-center"
+            aria-label={product.title}
+            class="group flex h-55 items-center justify-center"
           >
-            <div class="aspect-square flex items-center justify-center overflow-hidden">
-              <img src={product.img} alt={product.title} class="h-full w-full object-contain transition opacity-70 duration-300 group-hover:scale-105 group-hover:opacity-100" />
-            </div>
+            <img src={product.img} alt={product.title} class="max-h-full max-w-full object-contain opacity-65 grayscale transition duration-300 group-hover:scale-105 group-hover:opacity-100 group-hover:grayscale-0" />
           </a>
         ))}
+      </div>
+    </section>
+
+    <section class="bg-[#111] text-white">
+      <div class="mx-auto max-w-4xl px-6 py-18 text-center md:py-24">
+        <h2 class="text-3xl text-white md:text-5xl">一樣的律師費，解決問題可以更快。</h2>
+        <a
+          href="https://lin.ee/wVaKLny"
+          target="_blank"
+          rel="noopener noreferrer"
+          onclick="window.gtag && window.gtag('event', 'cta_click', {
+            cta_name: 'bottom_line_consult',
+            location: 'home_bottom_cta',
+            destination: 'line'
+          })"
+          class="mt-8 inline-flex min-h-13 items-center rounded-full bg-[#d3a07c] px-8 text-base font-black text-black transition hover:bg-[#e3b38f]"
+        >
+          馬上評估能否協商
+        </a>
       </div>
     </section>
   </main>
