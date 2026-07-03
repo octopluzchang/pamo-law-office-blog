@@ -40,10 +40,11 @@ collections:
           - { label: "車禍", value: "chehuo" }
           - { label: "不動產", value: "budongchan" }
           - { label: "遺產", value: "yichan" }
+          - { label: "借貸爭議", value: "jiedaigenyi" }
       - label: "分類標籤（顯示文字，需與上方分類對應）"
         name: "categoryLabel"
         widget: "select"
-        options: ["車禍", "不動產", "遺產"]
+        options: ["車禍", "不動產", "遺產", "借貸爭議"]
       - { label: "草稿", name: "draft", widget: "boolean", default: false, required: false }
       - { label: "內容", name: "body", widget: "markdown" }
 
