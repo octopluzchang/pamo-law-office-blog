@@ -127,7 +127,12 @@ const caseHighlights = [
         協助你談出可執行的還款條件。
       </p>
 
-      <form method="get" action="/calculator-internal-v2/" class="mx-auto mt-8 max-w-2xl space-y-6">
+      <form
+        method="get"
+        action="/calculator-internal-v2"
+        onsubmit="event.preventDefault(); const params = new URLSearchParams(new FormData(this)); window.location.href = '/calculator-internal-v2?' + params.toString();"
+        class="mx-auto mt-8 max-w-2xl space-y-6"
+      >
         <label class="block text-base font-black">
           欠款總額
           <input name="debtTotal" type="text" inputmode="numeric" class="mt-3 h-12 w-full border border-neutral-400 px-4 text-center text-base outline-none transition focus:border-[#1687ff] focus:ring-2 focus:ring-[#1687ff]" />
