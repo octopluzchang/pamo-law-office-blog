@@ -4,7 +4,7 @@ import ArticleCard from '../../../components/ArticleCard.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const cats = ['chehuo', 'budongchan', 'yichan', 'jiedaigenyi'];
+  const cats = ['chehuo', 'budongchan', 'yichan', 'jiedaigenyi', 'other'];
   return cats.map((cat) => ({
     params: { cat },
   }));
@@ -17,6 +17,7 @@ const categoryLabels: Record<string, string> = {
   budongchan: '不動產',
   yichan: '遺產',
   jiedaigenyi: '借貸爭議',
+  other: '其他',
 };
 
 const articles = (await getCollection('articles'))
@@ -61,6 +62,7 @@ const currentCat = cat ?? 'all';
         <a href="/articles/category/budongchan/" class:list={['filter-pill', currentCat === 'budongchan' && 'current']}>不動產</a>
         <a href="/articles/category/yichan/" class:list={['filter-pill', currentCat === 'yichan' && 'current']}>遺產</a>
         <a href="/articles/category/jiedaigenyi/" class:list={['filter-pill', currentCat === 'jiedaigenyi' && 'current']}>借貸爭議</a>
+        <a href="/articles/category/other/" class:list={['filter-pill', currentCat === 'other' && 'current']}>其他</a>
       </div>
 
       <div id="articles-list" class="mx-auto mt-12 grid max-w-5xl gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
